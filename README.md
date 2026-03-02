@@ -110,6 +110,10 @@
 
 - C
 
+#### Near-Palindromes
+
+- C
+
 ## Hard
 
 ### Official

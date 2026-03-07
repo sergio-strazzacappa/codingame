@@ -2,6 +2,15 @@
 
 ## Easy
 
+### Onboarding
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
 ### Community
 
 #### Brackets, Extreme Edition
@@ -73,12 +82,6 @@
 - Python
 
 #### MIME Type
-
-- Bash
-- C
-- Python
-
-#### Onboarding
 
 - Bash
 - C
@@ -415,14 +418,6 @@
 -   **Offset Arrays**
 
     1.  C
-
--   **Onboarding**
-
-    1.  Bash
-    2.  C
-    3.  C++
-    4.  Java
-    5.  Javascript
 
 -   **Periodic Table Spelling**
 

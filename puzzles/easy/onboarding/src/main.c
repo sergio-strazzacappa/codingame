@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main () {
     while (1) {
@@ -13,5 +14,5 @@ int main () {
             printf("%s\n", enemy_2);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

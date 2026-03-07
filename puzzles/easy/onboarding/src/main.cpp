@@ -2,9 +2,7 @@
 
 using namespace std;
 
-#define ll long long
-
-void solve() {
+int main() {
     string enemy_1, enemy_2;
     int dist_1, dist_2;
 
@@ -18,14 +16,11 @@ void solve() {
         cin >> dist_2;
         cin.ignore();
 
-        if (dist_1 < dist_2) {
+        if (dist_1 < dist_2)
             cout << enemy_1 << endl;
-        } else {
+        else
             cout << enemy_2 << endl;
-        }
     }
-}
 
-int main() {
-    solve();
+    return 0;
 }

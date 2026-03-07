@@ -12,6 +12,7 @@
  * TODO: The code seems to work.
  * Make some tests
  * remove comments
+ * implement absolute path ~ or /home/...
  *
  * Issues: the #define directives don't accept _H in its name, the bundler
  * will remove it as if it were a guard directive

@@ -5,17 +5,34 @@
 #include <stdio.h>
 
 /*
- * [Header][0][1][2]....[count]
- *    ^     ^
+ * [Header][array][1][2]....[count]
+ *    ^       ^
+ *
+ * To use the dynamic array lib:
+ * 1. Include this file
+ * 2. Declare the array: datatype *var = NULL
+ * 3. Use the functions
  *
  * Functions:
  * ------------
  *  1. arr_push(arr, x)
- *  2. arr_len(arr)
- *  3. arr_size(arr)
- *  4. arr_free(arr)
+ *  Inserts an element at the end of the array or initialize it if it is NULL
+ *
+ *  2. arr_pop(arry, value)
+ *  Remove the last element of the array and return it
+ *
+ *  3. arr_len(arr)
+ *  Return the length of the array
+ *
+ *  4. arr_size(arr)
+ *  Return the capacity of the array, when the capacity is exceded it will
+ *  resize
+ *
+ *  5. arr_free(arr)
+ *  Free the memory pointed by the array
  *
  *  TODO: Add needed functions
+ *  Init with a size passed as parameter
  */
 
 typedef struct Header {
@@ -29,7 +46,7 @@ typedef struct Header {
     do {                                                                    \
         if ((arr) == NULL) {                                                \
             Header *header =                                                \
-                (Header *)malloc(sizeof(*arr) * ARR_INIT_SIZE +             \
+                (Header *)malloc(sizeof(*(arr)) * ARR_INIT_SIZE +           \
                     sizeof(Header));                                        \
                                                                             \
             if (header == NULL) {                                           \
@@ -63,8 +80,25 @@ typedef struct Header {
         (arr)[header->count++] = (x);                                       \
     } while (0);
 
-#define arr_len(arr) ((Header *)(arr) - 1)->count
-#define arr_size(arr) ((Header *)(arr) - 1)->size
-#define arr_free(arr) free((Header *)(arr) - 1);
+#define arr_pop(arr, value)                                                 \
+    do {                                                                    \
+        if ((arr) != NULL && ((Header *)(arr) - 1)->count > 0) {            \
+            ((Header *)(arr) - 1)->count--;                                 \
+            (value) = (arr)[((Header *)(arr) - 1)->count];                  \
+        } else {                                                            \
+            (value) = 0;                                                    \
+        }                                                                   \
+    } while (0);
+
+#define arr_len(arr)    (((arr) != NULL) ? (((Header *)(arr) - 1)->count) : 0)
+#define arr_size(arr)   (((arr) != NULL) ? (((Header *)(arr) - 1)->size) : 0)
+
+#define arr_free(arr)                                                       \
+do {                                                                        \
+    if ((arr) != NULL) {                                                    \
+        free((Header *)(arr) - 1);                                          \
+        (arr) = NULL;                                                       \
+    }                                                                       \
+} while (0);
 
 #endif /* ARRAY_H */

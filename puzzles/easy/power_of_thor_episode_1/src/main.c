@@ -1,18 +1,5 @@
 #include <stdio.h>
-
-void solve(int light_x, int light_y, int initial_tx, int initial_ty);
-
-int main() {
-    int light_x;
-    int light_y;
-    int initial_tx;
-    int initial_ty;
-
-    scanf("%d%d%d%d", &light_x, &light_y, &initial_tx, &initial_ty);
-    solve(light_x, light_y, initial_tx, initial_ty);
-
-    return 0;
-}
+#include <stdlib.h>
 
 void solve(int light_x, int light_y, int initial_tx, int initial_ty) {
     while (1) {
@@ -41,4 +28,16 @@ void solve(int light_x, int light_y, int initial_tx, int initial_ty) {
 
         printf("\n");
     }
+}
+
+int main() {
+    int light_x;
+    int light_y;
+    int initial_tx;
+    int initial_ty;
+
+    scanf("%d%d%d%d", &light_x, &light_y, &initial_tx, &initial_ty);
+    solve(light_x, light_y, initial_tx, initial_ty);
+
+    return EXIT_FAILURE;
 }

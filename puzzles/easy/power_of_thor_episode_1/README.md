@@ -58,9 +58,9 @@ slightly different in order to avoid hard coded solutions._
 
 ## Game Input
 
-- The program must first read the initialization data from the standard input,
-  then, in an infinite loop, provides on the standard output the instructions to
-  move Thor
+The program must first read the initialization data from the standard input,
+then, in an infinite loop, provides on the standard output the instructions to
+move Thor.
 
 ### Initialization Input
 

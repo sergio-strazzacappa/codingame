@@ -11,6 +11,15 @@
 - Javascript
 - Python
 
+### Power Of Thor - Episode 1
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
 ### Community
 
 #### Brackets, Extreme Edition
@@ -82,12 +91,6 @@
 - Python
 
 #### MIME Type
-
-- Bash
-- C
-- Python
-
-#### Power Of Thor - Episode 1
 
 - Bash
 - C
@@ -426,15 +429,6 @@
 -   **Playing Card Odds**
 
     1.  C
-
--   **Power Of Thor - Episode 1**
-
-    1.  Bash
-    2.  C
-    3.  C++
-    4.  Java
-    5.  Javascript
-    6.  Python
 
 -   **Prefix Code**
 

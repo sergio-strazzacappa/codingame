@@ -7,7 +7,7 @@ int main() {
 
     int closest_temp = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         int temp;
         scanf("%d", &temp);
 
@@ -23,5 +23,5 @@ int main() {
 
     printf("%d\n", closest_temp);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

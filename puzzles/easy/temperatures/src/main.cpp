@@ -2,9 +2,7 @@
 
 using namespace std;
 
-#define ll long long
-
-void solve() {
+int main() {
     int n;
     int closest_temp = INT32_MAX;
 
@@ -30,8 +28,6 @@ void solve() {
         }
     }
     cout << closest_temp << endl;
-}
 
-int main() {
-    solve();
+    return EXIT_SUCCESS;
 }

@@ -20,6 +20,15 @@
 - Javascript
 - Python
 
+### Temperatures
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
 ### Community
 
 #### Brackets, Extreme Edition
@@ -91,12 +100,6 @@
 - Python
 
 #### MIME Type
-
-- Bash
-- C
-- Python
-
-#### Temperatures
 
 - Bash
 - C
@@ -488,15 +491,6 @@
 #### <p class="easy"> Table Of Contents </p>
 
 [**C**]
-
-#### Temperatures
-
-1.  Bash
-2.  C
-3.  C++
-4.  Java
-5.  Javascript
-6.  Python
 
 #### The Descent
 

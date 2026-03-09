@@ -18,21 +18,28 @@
  *  1. arr_push(arr, x)
  *  Inserts an element at the end of the array or initialize it if it is NULL
  *
- *  2. arr_pop(arry, value)
+ *  2. arr_pop(arr, item)
  *  Remove the last element of the array and return it
  *
- *  3. arr_len(arr)
+ *  3. arr_exists(arr, value, found)
+ *  Return true if value is in arr, false otherwise
+ *
+ *  4. arr_len(arr)
  *  Return the length of the array
  *
- *  4. arr_size(arr)
+ *  5. arr_size(arr)
  *  Return the capacity of the array, when the capacity is exceded it will
  *  resize
  *
- *  5. arr_free(arr)
+ *  6. arr_free(arr)
  *  Free the memory pointed by the array
  *
  *  TODO: Add needed functions
  *  Init with a size passed as parameter
+ *  arr_push shoul call the init macro
+ *  ARR_INIT_SIZE should begin with a lower value
+ *  insert an element in the middle of the array
+ *  remove an element at a specific index
  */
 
 typedef struct Header {
@@ -51,7 +58,6 @@ typedef struct Header {
                                                                             \
             if (header == NULL) {                                           \
                 fprintf(stderr, "Failed to initialize the array\n");        \
-                (arr) = NULL;                                               \
                 break;                                                      \
             }                                                               \
                                                                             \
@@ -63,32 +69,46 @@ typedef struct Header {
         Header *header = (Header *)(arr) - 1;                               \
                                                                             \
         if (header->count >= header->size) {                                \
-            header->size *= 2;                                              \
+            size_t next_size = header->size * 2;                            \
             Header *h =                                                     \
                 (Header *)realloc(header, sizeof(*arr) * header->size +     \
                 sizeof(Header));                                            \
                                                                             \
             if (h == NULL) {                                                \
                 fprintf(stderr, "Failed to reallocate the array\n");        \
-                (arr) = NULL;                                               \
                 break;                                                      \
             }                                                               \
             header = h;                                                     \
+            header->size = next_size;                                       \
             (arr) = (void *)(header + 1);                                   \
         }                                                                   \
                                                                             \
         (arr)[header->count++] = (x);                                       \
     } while (0);
 
-#define arr_pop(arr, value)                                                 \
+#define arr_pop(arr, item)                                                  \
     do {                                                                    \
         if ((arr) != NULL && ((Header *)(arr) - 1)->count > 0) {            \
             ((Header *)(arr) - 1)->count--;                                 \
-            (value) = (arr)[((Header *)(arr) - 1)->count];                  \
+            (item) = (arr)[((Header *)(arr) - 1)->count];                   \
         } else {                                                            \
-            (value) = 0;                                                    \
+            (item) = 0;                                                     \
         }                                                                   \
     } while (0);
+
+#define arr_exists(arr, value, found)                                       \
+    do {                                                                    \
+        (found) = 0;                                                        \
+        if ((arr) != NULL) {                                                \
+            for (size_t i = 0; i < ((Header *)(arr) - 1)->count; i++) {     \
+                if (arr[i] == value) {                                      \
+                    found = 1;                                              \
+                    break;                                                  \
+                }                                                           \
+            }                                                               \
+        }                                                                   \
+    } while (0);
+
 
 #define arr_len(arr)    (((arr) != NULL) ? (((Header *)(arr) - 1)->count) : 0)
 #define arr_size(arr)   (((arr) != NULL) ? (((Header *)(arr) - 1)->size) : 0)

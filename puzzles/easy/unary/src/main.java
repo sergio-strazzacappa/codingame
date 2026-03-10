@@ -53,7 +53,7 @@ class Solution {
                 }
             }
             if (binary.charAt(i) == '0' && firstZero && !firstChar) {
-                answer += " 00 0";  
+                answer += " 00 0";
                 firstZero = false;
                 firstOne = true;
             } else if (binary.charAt(i) == '1' && firstOne && !firstChar) {

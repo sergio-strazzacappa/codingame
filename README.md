@@ -29,6 +29,15 @@
 - Javascript
 - Python
 
+### Unary
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
 ### Community
 
 #### Brackets, Extreme Edition
@@ -100,12 +109,6 @@
 - Python
 
 #### MIME Type
-
-- Bash
-- C
-- Python
-
-#### Unary
 
 - Bash
 - C
@@ -512,12 +515,6 @@
 #### <p class="easy"> Triangle Toggle </p>
 
 [**C**]
-
-#### Unary
-
-1.  C++
-2.  Java
-3.  Javascript
 
 #### Word Search For Programmers
 

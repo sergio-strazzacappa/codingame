@@ -1,16 +1,29 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-void solve(char message[]);
-void to_bin(char c, char binary[]);
+// Recieves a char and return a binary representation of it
+void to_binary(char c, char binary[]) {
+    int i = 0;
 
-int main() {
-    char message[101];
-    scanf("%[^\n]", message);
+    while (c > 0) {
+        binary[i++] = (c % 2) + '0';
+        c /= 2;
+    }
+    binary[i] = '\0';
 
-    solve(message);
+    // complete up to 7 bits with zeros
+    while (strlen(binary) < 7) {
+        binary[i++] = '0';
+        binary[i] = '\0';
+    }
 
-    return 0;
+    // revert the string
+    for (int i = 0; i < strlen(binary) / 2; i++) {
+        char tmp = binary[strlen(binary) - i - 1];
+        binary[strlen(binary) - i - 1] = binary[i];
+        binary[i] = tmp;
+    }
 }
 
 void solve(char message[]) {
@@ -18,7 +31,7 @@ void solve(char message[]) {
     char binary[8];
 
     for (int i = 0; i < strlen(message); i++) {
-        to_bin(message[i], binary);
+        to_binary(message[i], binary);
         strcat(binary_message, binary);
     }
 
@@ -31,7 +44,7 @@ void solve(char message[]) {
 
         if (current == last) {
             encoded_message[i++] = '0';
-        } else if (last == '-') {
+        } else if (last == '-') { // sentinel marking the start of the seq
             if (current == '0') {
                 encoded_message[i++] = '0';
                 encoded_message[i++] = '0';
@@ -63,25 +76,11 @@ void solve(char message[]) {
     printf("%s\n", encoded_message);
 }
 
-void to_bin(char c, char binary[]) {
-    int i = 0;
+int main() {
+    char message[101];
+    scanf("%[^\n]", message);
 
-    while (c > 0) {
-        binary[i++] = (c % 2) + '0';
-        c /= 2;
-    }
-    binary[i] = '\0';
+    solve(message);
 
-    // complete up to 7 bits with zeros
-    while (strlen(binary) < 7) {
-        binary[i++] = '0';
-        binary[i] = '\0';
-    }
-
-    // revert the string
-    for (int i = 0; i < strlen(binary) / 2; i++) {
-        char tmp = binary[strlen(binary) - i - 1];
-        binary[strlen(binary) - i - 1] = binary[i];
-        binary[i] = tmp;
-    }
+    return EXIT_SUCCESS;
 }

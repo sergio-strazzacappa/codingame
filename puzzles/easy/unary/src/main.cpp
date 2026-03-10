@@ -2,8 +2,6 @@
 
 using namespace std;
 
-#define ll long long
-
 string to_binary(char c) {
     string binary = "";
 
@@ -24,7 +22,7 @@ void solve() {
     string message;
     string binary = "";
     getline(cin, message);
-    
+
     for (char c : message) {
         binary += to_binary(c);
     }
@@ -36,8 +34,8 @@ void solve() {
     int prev;
     int quantity;
 
-    // cada caracter
-    for (int i = 0; i < binary.size(); i++) {
+    // for each char
+    for (size_t i = 0; i < binary.size(); i++) {
         int bit = (int)binary[i] - 48; // bit 0, 1
 
         if (i == 0) {

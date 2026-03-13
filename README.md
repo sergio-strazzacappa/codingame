@@ -2,6 +2,15 @@
 
 ## Easy
 
+### MIME Type
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
 ### Onboarding
 
 - Bash
@@ -103,12 +112,6 @@
 - Python
 
 #### Mars Lander - Episode 1
-
-- Bash
-- C
-- Python
-
-#### MIME Type
 
 - Bash
 - C
@@ -399,13 +402,6 @@
 -   **Merlin's Magic Square**
 
     1.  C
-
--   **MIME Type**
-
-    1.  C
-    2.  C++
-    3.  Java
-    4.  Javascript
 
 -   **Moves In Maze**
 

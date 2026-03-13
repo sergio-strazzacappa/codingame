@@ -11,7 +11,7 @@ int hm_init(
     hmap->dt = dt;
     hmap->cmp = cmp;
 
-    hmap->entries = malloc(hmap->size * sizeof(hm_entry_t));
+    hmap->entries = (hm_entry_t *)malloc(hmap->size * sizeof(hm_entry_t));
 
     if (hmap->entries == NULL) {
         fprintf(stderr, "Failed to allocte memory\n");
@@ -19,8 +19,6 @@ int hm_init(
     }
 
     for (size_t i = 0; i < hmap->size; i++) {
-        hmap->entries[i].key = malloc(hmap->key_size);
-        hmap->entries[i].value = malloc(hmap->value_size);
         hmap->entries[i].tombstone = EMPTY;
     }
 
@@ -33,8 +31,8 @@ int hm_put(hm_map_t *const hmap, const void *key, const void *value) {
         hm_resize(hmap);
     }
 
-    size_t index = -1;
-
+    // get the index using the appropiate hash function
+    size_t index = 0;
     switch (hmap->dt) {
         case INT:
             index = hm_hash_i(key, hmap->key_size, hmap->size);
@@ -47,22 +45,22 @@ int hm_put(hm_map_t *const hmap, const void *key, const void *value) {
             break;
     }
 
-    hm_entry_t *entry = &(hmap->entries[index]); 
-    while (entry->tombstone == USED) {
-        if (hmap->cmp(key, entry->key) == 0) {
+    while (hmap->entries[index].tombstone == USED) {
+        if (hmap->cmp(key, hmap->entries[index].key) == 0) {
             // key exists
-            hmap->count--;
-            break;
+            memcpy(hmap->entries[index].value, value, hmap->value_size);
+            return EXIT_SUCCESS;
         }
-
         index = (index + 1) % hmap->size;
-        entry = &(hmap->entries[index]);
     }
 
-    memcpy(entry->key, key, hmap->key_size);
-    memcpy(entry->value, value, hmap->value_size);
-    entry->tombstone = USED;
+    hmap->entries[index].key = (void *)malloc(hmap->key_size);
+    hmap->entries[index].value = (void *)malloc(hmap->value_size);
 
+    memcpy(hmap->entries[index].key, key, hmap->key_size);
+    memcpy(hmap->entries[index].value, value, hmap->value_size);
+
+    hmap->entries[index].tombstone = USED;
     hmap->count++;
 
     return EXIT_SUCCESS;
@@ -70,8 +68,7 @@ int hm_put(hm_map_t *const hmap, const void *key, const void *value) {
 
 // O(1)
 void *hm_get(hm_map_t *const hmap, const void *key) {
-    size_t index = -1;
-
+    size_t index = 0;
     switch (hmap->dt) {
         case INT:
             index = hm_hash_i(key, hmap->key_size, hmap->size);
@@ -85,7 +82,6 @@ void *hm_get(hm_map_t *const hmap, const void *key) {
     }
 
     size_t start = index;
-
     while (hmap->entries[index].tombstone != EMPTY) {
         if (hmap->entries[index].tombstone == USED) {
             if (hmap->cmp(key, hmap->entries[index].key) == 0) {
@@ -104,7 +100,7 @@ void *hm_get(hm_map_t *const hmap, const void *key) {
     return NULL;
 }
 
-// algoritmo djb2 for integers
+// algorithm djb2 for integers
 size_t hm_hash_i(const void *key, const size_t k_size, const size_t size) {
     unsigned long hash = 5381;
     const unsigned char *ptr = (unsigned char *)key;
@@ -115,7 +111,7 @@ size_t hm_hash_i(const void *key, const size_t k_size, const size_t size) {
     return (hash % size);
 }
 
-// algoritmo djb2 for strings
+// algorithm djb2 for strings
 size_t hm_hash_s(const void *key, const size_t k_size, const size_t size) {
     unsigned long hash = 5381;
     const unsigned char *ptr = (unsigned char *)key;
@@ -135,7 +131,7 @@ int hm_resize(hm_map_t *const hmap) {
 
     // create the new structure
     hmap->size = old_size * 2;
-    hmap->entries = malloc(hmap->size * sizeof(hm_entry_t));
+    hmap->entries = (hm_entry_t *)malloc(hmap->size * sizeof(hm_entry_t));
 
     if (hmap->entries == NULL) {
         fprintf(stderr, "Failed to resize\n");
@@ -145,8 +141,6 @@ int hm_resize(hm_map_t *const hmap) {
     }
 
     for (size_t i = 0; i < hmap->size; i++) {
-        hmap->entries[i].key = malloc(hmap->key_size);
-        hmap->entries[i].value = malloc(hmap->value_size);
         hmap->entries[i].tombstone = EMPTY;
     }
 
@@ -155,9 +149,9 @@ int hm_resize(hm_map_t *const hmap) {
     for (size_t i = 0; i < old_size; i++) {
         if (old_entries[i].tombstone == USED) { 
             hm_put(hmap, old_entries[i].key, old_entries[i].value);
+            free(old_entries[i].key);
+            free(old_entries[i].value);
         }
-        free(old_entries[i].key);
-        free(old_entries[i].value);
     }
 
     free(old_entries);
@@ -167,8 +161,10 @@ int hm_resize(hm_map_t *const hmap) {
 
 int hm_free(hm_map_t *hmap) {
     for (size_t i = 0; i < hmap->size; i++) {
-        free(hmap->entries[i].key);
-        free(hmap->entries[i].value);
+        if (hmap->entries[i].tombstone == USED) {
+            free(hmap->entries[i].key);
+            free(hmap->entries[i].value);
+        }
     }
 
     free(hmap->entries);

@@ -1,5 +1,5 @@
-#ifndef H_MAP
-#define H_MAP
+#ifndef MAP_H
+#define MAP_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -7,10 +7,11 @@
 
 /*
  * Hashmap implementation Key -> value
+ *
+ * Datatypes supported of key:
+ * - INT
+ * - STRING
  * 
- */
-
-/*
  * TODO: implement remove function and print function passing 
  * a parameter a function used to print a single element
  */
@@ -33,16 +34,15 @@ typedef struct hm_entry_s {
     void *key;
     void *value;
     hm_state_t tombstone;
-
 } hm_entry_t;
 
 typedef struct hm_map_s {
-    hm_entry_t *entries;
-    size_t count;
-    size_t size;
-    size_t key_size;
-    size_t value_size;
-    hm_dt_t dt;
+    hm_entry_t *entries;    // <key, value>
+    size_t count;           // current size
+    size_t size;            // max size
+    size_t key_size;        // size of key datatype
+    size_t value_size;      // size of value datatype
+    hm_dt_t dt;             // datatype used for the key -> hash
 
     // function to compare keys
     int (*cmp)(const void *, const void *);
@@ -58,5 +58,4 @@ size_t hm_hash_s(const void *key, const size_t k_size, const size_t size);
 int hm_resize(hm_map_t *const hmap);
 int hm_free(hm_map_t *hmap);
 
-
-#endif /* H_MAP */
+#endif /* MAP_H */

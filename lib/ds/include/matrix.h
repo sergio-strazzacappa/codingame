@@ -23,7 +23,13 @@
  *      l-value:
  *      mat_get(mat, 1, 1) = 5
  *
- *  4. mat_free(mat)
+ *  4. mat_get_rows(mat)
+ *      Return the n of rows of the matrix
+ *
+ *  5. mat_get_cols(mat)
+ *      Return the n of cols of the matrix
+ *
+ *  6. mat_free(mat)
  *      Free the memory used
  */
 
@@ -74,7 +80,10 @@ typedef struct mat_header_s {
 
 // [r][c] = (r * cols) + c
 #define mat_get(mat, r, c)                                                  \
-    ((mat)[(r) * ((mat_header_t *)(mat) - 1)->cols + (c)])                  \
+    ((mat)[(r) * ((mat_header_t *)(mat) - 1)->cols + (c)])
+
+#define mat_get_rows(mat) ((mat_header_t *)(mat) - 1)->rows
+#define mat_get_cols(mat) ((mat_header_t *)(mat) - 1)->cols
 
 #define mat_free(mat)                                                       \
     do {                                                                    \

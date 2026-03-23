@@ -23,13 +23,16 @@
  *  3. arr_pop(arr, item)
  *  Remove the last element of the array
  *
- *  4. arr_len(arr)
+ *  4. arr_cp(dst, src)
+ *  Make a shallow copy of src into dst
+ *
+ *  5. arr_len(arr)
  *  Return the length of the array
  *
- *  5. arr_cap(arr)
+ *  6. arr_cap(arr)
  *  Return the capacity of the array
  *
- *  6. arr_free(arr)
+ *  7. arr_free(arr)
  *  Free the memory pointed by the array
 
  *  Internal functions:
@@ -71,6 +74,9 @@ typedef struct {
         ? (--(arr_get_header(arr)->count))          \
         : 0)
 
+#define arr_cp(dst, src)                            \
+    (dst) = _arr_cp((src), sizeof(*(src)))
+
 #define arr_len(arr)                                \
     ((arr)                                          \
         ? ((arr_get_header(arr)->count))            \
@@ -86,6 +92,7 @@ typedef struct {
 
 void *_arr_init(const size_t n, const size_t size);
 void *_arr_push(void *arr, const size_t size);
+void *_arr_cp(void *src, const size_t size);
 void *_arr_free(void *arr);
 
 #endif /* ARRAY_H */

@@ -30,7 +30,16 @@ int main() {
         printf("Element %zu: %d\n", (i + 1), arr_i[i]);
     }
 
+    int *arr_i_cp = NULL;
+    arr_cp(arr_i_cp, arr_i);
+
+    printf("Copy of array of ints\n");
+    for (size_t i = 0; i < arr_len(arr_i_cp); i++) {
+        printf("Element %zu: %d\n", (i + 1), arr_i_cp[i]);
+    }
+
     arr_free(arr_i);
+    arr_free(arr_i_cp);
 
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////

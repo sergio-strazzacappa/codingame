@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "../include/array.h"
 
 /**
@@ -22,7 +23,7 @@ void *_arr_init(const size_t n, const size_t size) {
 
 /**
  * @param arr:  arr to grow if needed
- * @size:       size of the elements
+ * @param size: size of the elements
  * @return:     a pointer to the array
  */
 void *_arr_push(void *arr, const size_t size) {
@@ -46,6 +47,25 @@ void *_arr_push(void *arr, const size_t size) {
     }
 
     return (void *)(h + 1);
+}
+
+/**
+ * @brief:      copy the src array and returns a pointer to the copy
+ * @param src:  arr to copy
+ * @param size: size of the elements
+ * @return:     a pointer to the copy
+ */
+void *_arr_cp(void *src, const size_t size) {
+    if (src == NULL)
+        return NULL;
+
+    arr_header_t* h = arr_get_header(src);
+    size_t total_size = arr_cap(src) * size + sizeof(arr_header_t);
+
+    void *dst = (arr_header_t *)malloc(total_size);
+    memcpy(dst, h, total_size);
+
+    return (void *)((arr_header_t *)dst + 1);
 }
 
 /**

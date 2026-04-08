@@ -28,11 +28,10 @@ class Solution {
             String extention = "";
 
             if (lastDot != -1) {
-                extention = 
+                extention =
                     fname.substring(lastDot + 1, fname.length()).toUpperCase();
             }
 
-        
             int pos = -1;
 
             for (int j = 0; j < exts.length; j++) {

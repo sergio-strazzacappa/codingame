@@ -2,6 +2,64 @@
 
 ## Easy
 
+### ASCII Art
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
+### Brackets, Extreme Edition
+
+- C
+- Python
+
+### Defibrillators
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
+### Egyptian Multiplication
+
+- C
+
+### Horse-racing Duals
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
+### How time flies
+
+- C
+
+### Jack Silver: The Casino
+
+- C
+
+### Mars Lander - Episode 1
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
+### May The Triforce Be With You!
+
+- C
+- Python
+
 ### MIME Type
 
 - Bash
@@ -10,6 +68,10 @@
 - Java
 - Javascript
 - Python
+
+### Nature Of Quadrilaterals
+
+- C
 
 ### Onboarding
 
@@ -29,7 +91,20 @@
 - Javascript
 - Python
 
+### Rugby Score
+
+- C
+
 ### Temperatures
+
+- Bash
+- C
+- C++
+- Java
+- Javascript
+- Python
+
+### The Descent
 
 - Bash
 - C
@@ -47,75 +122,19 @@
 - Javascript
 - Python
 
+### XML MDF-2016
+
+- C
+
 ### Community
 
-#### Brackets, Extreme Edition
-
-- C
-- Python
-
-#### Egyptian Multiplication
-
-- C
-
 #### Horse-racing Hyperduals
-
-- C
-
-#### How Time Flies
-
-- C
-
-#### Jack Silver: The Casino
-
-- C
-
-#### May The Triforce Be With You!
-
-- C
-- Python
-
-#### Nature Of Quadrilaterals
-
-- C
-
-#### Rugby Score
 
 - C
 
 #### Shadow Casting
 
 - C
-
-#### XML MDF-2016
-
-- C
-
-### Official
-
-#### ASCII Art
-
-- Bash
-- C
-- Python
-
-#### Defibrillators
-
-- Bash
-- C
-- Python
-
-#### Horse-racing Duals
-
-- Bash
-- C
-- Python
-
-#### Mars Lander - Episode 1
-
-- Bash
-- C
-- Python
 
 ## Medium
 
@@ -152,14 +171,6 @@
 -   **Robot Reach**
 
     1.  C
-
-### Official
-
--   **The Descent**
-
-    1.  Bash
-    2.  C
-    3.  Python
 
 ## Medium
 
@@ -352,31 +363,6 @@
 
 ### Official
 
--   **ASCII Art**
-
-    1.  C
-    2.  C++
-    3.  Java
-    4.  Javascript
-    5.  Python
-
--   **Defibrillators**
-
-    1.  C
-    2.  C++
-    3.  Java
-    4.  Javascript
-    5.  Python
-
--   **Horse Racing Duals**
-
-    1.  Bash
-    2.  C
-    3.  C++
-    4.  Java
-    5.  Javascript
-    6.  Python
-
 -   **Logic Gates**
 
     1.  C
@@ -389,15 +375,6 @@
 -   **Lumen**
 
     1.  C
-
--   **Mars Lander - Episode 1**
-
-    1.  Bash
-    2.  C
-    3.  C++
-    4.  Java
-    5.  Javascript
-    6.  Python
 
 -   **Merlin's Magic Square**
 
@@ -490,15 +467,6 @@
 #### <p class="easy"> Table Of Contents </p>
 
 [**C**]
-
-#### The Descent
-
-1.  Bash
-2.  C
-3.  C++
-4.  Java
-5.  Javascript
-6.  Python
 
 #### <p class="easy"> The Mystic Rectangle </p>
 

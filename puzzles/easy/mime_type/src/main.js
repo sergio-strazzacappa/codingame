@@ -20,7 +20,7 @@ for (let i = 0; i < q; i++) {
     }
 
     let mime = "UNKNOWN";
-    
+
     for (let j = 0; j < exts.length; j++) {
         if (exts[j].toUpperCase() === ext.toUpperCase()) {
             mime = mimes[j];

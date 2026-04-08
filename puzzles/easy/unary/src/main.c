@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Recieves a char and return a binary representation of it
+// Receives a char and return a binary representation of it
 void to_binary(char c, char binary[]) {
-    int i = 0;
+    size_t i = 0;
 
     while (c > 0) {
         binary[i++] = (c % 2) + '0';
@@ -19,7 +19,7 @@ void to_binary(char c, char binary[]) {
     }
 
     // revert the string
-    for (int i = 0; i < strlen(binary) / 2; i++) {
+    for (size_t i = 0; i < strlen(binary) / 2; i++) {
         char tmp = binary[strlen(binary) - i - 1];
         binary[strlen(binary) - i - 1] = binary[i];
         binary[i] = tmp;
@@ -37,9 +37,9 @@ void solve(char message[]) {
 
     char last = '-';
     char encoded_message[1000] = "";
-    int i = 0;
+    size_t i = 0;
 
-    for (int j = 0; j < strlen(binary_message); j++) {
+    for (size_t j = 0; j < strlen(binary_message); j++) {
         char current = binary_message[j];
 
         if (current == last) {

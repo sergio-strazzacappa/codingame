@@ -25,6 +25,10 @@
 - Javascript
 - Python
 
+### Detective Pikaptcha EP1
+
+- C
+
 ### Egyptian Multiplication
 
 - C

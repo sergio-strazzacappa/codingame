@@ -29,6 +29,10 @@
 
 - C
 
+### Detective Pikaptcha EP2
+
+- C
+
 ### Egyptian Multiplication
 
 - C

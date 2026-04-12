@@ -11,6 +11,10 @@
 - Javascript
 - Python
 
+### Balanced Ternary Computer: Encode
+
+- C
+
 ### Brackets, Extreme Edition
 
 - C

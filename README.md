@@ -20,6 +20,10 @@
 - C
 - Python
 
+### Bulk Email Generator
+
+- C
+
 ### Defibrillators
 
 - Bash

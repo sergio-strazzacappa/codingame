@@ -54,6 +54,10 @@
 - Javascript
 - Python
 
+### Horse-racing Hyperduals
+
+- C
+
 ### How time flies
 
 - C
@@ -147,10 +151,6 @@
 - C
 
 ### Community
-
-#### Horse-racing Hyperduals
-
-- C
 
 #### Shadow Casting
 

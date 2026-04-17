@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 order   = input()
 side    = input()
 
@@ -13,7 +15,7 @@ for c in order:
         index = 2
     if c == 'L':
         index = 3
-    
+
     folds[(index + 1) % 4] *= 2
     folds[(index + 3) % 4] *= 2
     folds[(index + 2) % 4] += folds[index]

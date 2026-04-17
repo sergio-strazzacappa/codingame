@@ -45,6 +45,11 @@
 
 - C
 
+### Folding Paper
+
+- C
+- Python
+
 ### Horse-racing Duals
 
 - Bash
@@ -345,11 +350,6 @@
     3.  Python
 
 -   **Fix The Networks**
-
-    1.  C
-    2.  Python
-
--   **Folding Paper**
 
     1.  C
     2.  Python

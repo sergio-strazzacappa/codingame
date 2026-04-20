@@ -94,6 +94,10 @@
 - Javascript
 - Python
 
+### Monday Tuesday Happy Days
+
+- C
+
 ### Nature Of Quadrilaterals
 
 - C

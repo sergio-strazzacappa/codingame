@@ -146,6 +146,10 @@
 - Javascript
 - Python
 
+### Timer For Clash Of Code
+
+- C
+
 ### Unary
 
 - Bash

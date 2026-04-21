@@ -163,6 +163,10 @@
 - Javascript
 - Python
 
+### What's So Complex About Mandelbrot?
+
+- C
+
 ### XML MDF-2016
 
 - C

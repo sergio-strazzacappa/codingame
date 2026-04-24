@@ -141,6 +141,10 @@
 - Javascript
 - Python
 
+### Text Formatting
+
+- C
+
 ### The Descent
 
 - Bash

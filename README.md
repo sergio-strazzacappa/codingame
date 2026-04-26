@@ -115,6 +115,10 @@
 - Javascript
 - Python
 
+### Organic Compound
+
+- C
+
 ### Power Of Thor - Episode 1
 
 - Bash

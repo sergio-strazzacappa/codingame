@@ -115,7 +115,7 @@
 - Javascript
 - Python
 
-### Organic Compound
+### Organic Compounds
 
 - C
 
@@ -133,6 +133,10 @@
 - C
 
 ### Self-driving Car Testing
+
+- C
+
+### Simple Awalé
 
 - C
 

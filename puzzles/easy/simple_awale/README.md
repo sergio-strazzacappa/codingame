@@ -15,7 +15,7 @@ excluding his reserve and then back in his own bowls, until his hand is empty.
 If the final grain is distributed to the player's reserve, he is allowed to play
 again.
 
-### Examples
+## Examples
 
 <pre style="color:#FFFFFF">
 bowls num : 0 1 2 3 4 5  6
@@ -49,7 +49,7 @@ REPLAY
 </pre>
 
 Your goal is to simulate your turn of game. Given the numbers of grains in each
-bowl and the **num** of the chosen bowl your program has to display the new
+bowl and the `num` of the chosen bowl your program has to display the new
 situation and the string **REPLAY** if the player has a chance to play again.
 Print the numbers of grains of opponent bowls separated by space, then yours.
 Put reserve counts between brackets.
@@ -58,21 +58,23 @@ Remember that the player always skips the opponent's reserve when distributing!
 
 ## Input
 
-**Line 1**: **opBowls** a string of numbers of grains in each opponent bowls
-separated by spaces \
-**Line 2**: **myBowls** a string of numbers of grains in each of my bowls
-separated by spaces \
-**Line 3**: **num** the index of chosen bowl
+- **Line 1**: `opBowls` a string of numbers of grains in each opponent bowls
+  separated by spaces
+- **Line 2**: `myBowls` a string of numbers of grains in each of my bowls
+  separated by spaces
+- **Line 3**: `num` the index of chosen bowl
 
 ## Output
 
-**Line 1**: a string of numbers of grains in each opponent bowls separated by
-spaces \
-**Line 2**: a string of numbers of grains in each of my bowls separated by
-spaces \
-If the same player gets to play again: \
-**Line 3**: **REPLAY**
+- **Line 1**: a string of numbers of grains in each opponent bowls separated by
+  spaces
+- **Line 2**: a string of numbers of grains in each of my bowls separated by
+  spaces
+
+If the same player gets to play again:
+
+- **Line 3**: **REPLAY**
 
 ## Constraints
 
-0 &leq; num &lt; 6
+0 &leq; `num` &lt; 6

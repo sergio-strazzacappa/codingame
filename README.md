@@ -63,7 +63,7 @@
 
 - C
 
-### How time flies
+### How Time Flies
 
 - C
 
@@ -95,6 +95,10 @@
 - Python
 
 ### Monday Tuesday Happy Days
+
+- C
+
+### Morellet's Random Lines
 
 - C
 

@@ -41,6 +41,10 @@
 
 - C
 
+### Disordered First Contact
+
+- C
+
 ### Egyptian Multiplication
 
 - C

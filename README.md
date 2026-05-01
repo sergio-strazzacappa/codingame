@@ -71,6 +71,10 @@
 
 - C
 
+### ISBN Check Digit
+
+- C
+
 ### Jack Silver: The Casino
 
 - C

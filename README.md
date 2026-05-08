@@ -2,6 +2,10 @@
 
 ## Easy
 
+### 1x1x1 Rubik's Cube Movements
+
+- C
+
 ### ASCII Art
 
 - Bash

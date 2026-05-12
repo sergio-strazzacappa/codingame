@@ -1,0 +1,65 @@
+#ifndef ENTITIES_H
+#define ENTITIES_H
+
+#include <stddef.h>
+#include <stdbool.h>
+#include "game.h"
+
+typedef enum type_e {
+    PLUM,
+    LEMON,
+    APPLE,
+    BANANA
+} type_t;
+
+typedef struct inventory_s {
+    int plum;
+    int lemons;
+    int apples;
+    int bananas;
+    int iron;
+    int wood;
+} inventory_t;
+
+typedef struct tree_s {
+    type_t type;
+    int x;
+    int y;
+    int size;
+    int health;
+    int fruits;
+    int cooldown;
+} tree_t;
+
+typedef struct troll_s {
+    int id;
+    int player;
+    int x;
+    int y;
+    int movement_speed;
+    int carry_capacity;
+    int harvest_power;
+    int chop_power;
+    int carry_plum;
+    int carry_lemon;
+    int carry_apple;
+    int carry_banana;
+    int carry_iron;
+    int carry_wood;
+} troll_t;
+
+extern inventory_t me;
+extern inventory_t opp;
+extern size_t tree_count;
+extern tree_t trees[MAX_WIDTH * MAX_HEIGHT];
+extern size_t troll_count;
+extern troll_t trolls[MAX_WIDTH * MAX_HEIGHT];
+
+void update_inventory(bool _me);
+void update_trees(void);
+void update_trolls(void);
+void print_inventories(void);
+void print_trees(void);
+void print_trolls(void);
+
+#endif /* ENTITIES_H */

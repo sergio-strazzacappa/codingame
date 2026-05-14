@@ -1,139 +1,127 @@
-/*
- * Bundler that copy the content of user's #include macros and generates
- * one output file
- *
- * 1. Finds the substring between "" in the #include directives and process
- *    the inner files recursively
- *
- * 2. Handle directories in the #include directives
- *
- * 3. Removes guards in header files, like #ifndef, #define, and #endif
- *
- * Usage: gcc -o bundler bundler.c && ./bundler file
- *
- * Issues: the #define directives don't accept _H in its name, the bundler
- * will remove it as if it were a guard directive
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MAX_FILES 256
-#define PATH_SIZE 256
-#define FILE_SIZE 32
+#include <stdbool.h>
+#include <ctype.h>
+#include "bundler.h"
 
 char *processed_files[MAX_FILES];
-size_t file_count = 0;
+size_t file_count;
 char *included_files[MAX_FILES];
-size_t included_files_count = 0;
+size_t included_files_count;
 
-void extract_filename(const char*const, char*const);
-int extract_dirname(const char*const , char*const);
-int is_processed(const char*const);
-int is_included(const char*const);
-void print_processed_files(void);
-void print_included_files(void);
-int parse_file(const char *const);
-int process_file(const char*const, const char*const);
+int main(int argc, char **argv) {
+    if (argc != 2) {
+        fprintf(stderr, "[ERROR] Usage: %s <file>\n", argv[0]);
 
-void extract_filename(const char *const path, char *const filename) {
-    char *last_slash = strrchr(path, '/');
-
-    if (last_slash == NULL) {
-        size_t path_len = strlen(path);
-        strncpy(filename, path, path_len);
-        filename[path_len] = '\0';
-    } else {
-        char *start = last_slash + 1;
-        size_t file_len = strlen(start);
-        strncpy(filename, start, file_len);
-        filename[file_len] = '\0';
-    }
-}
-
-int extract_dirname(const char *const path, char *const dirname) {
-    if (path == NULL || dirname == NULL)
         return EXIT_FAILURE;
-
-    char *last_slash = strrchr(path, '/');
-
-    if (last_slash == NULL) {
-        strcpy(dirname, ".");
-        return EXIT_SUCCESS;
     }
 
-    size_t dir_len = last_slash - path;
+    file_count = 0;
+    included_files_count = 0;
 
-    if (dir_len == 0) {
-        strcpy(dirname, "/");
-    } else {
-        strncpy(dirname, path, dir_len);
-        dirname[dir_len] = '\0';
-    }
+    process_file("", argv[1]);
+
+    bun_clear();
+
     return EXIT_SUCCESS;
 }
 
-int is_processed(const char *const filename) {
-    for (size_t i = 0; i < file_count; i++)
-        if (strcmp(filename, processed_files[i]) == 0)
-            return 1;
-    return 0;
-}
+int process_file(const char *const currentpath, const char *const filepath) {
+    fprintf(stderr, "[DEBUG] process_file(%s, %s)\n", currentpath, filepath);
 
-int is_included(const char *const filename) {
-    for (size_t i = 0; i < included_files_count; i++)
-        if (strcmp(filename, included_files[i]) == 0)
-            return 1;
-    return 0;
-}
+    // build the fullpath
+    char fullpath[PATH_SIZE];
+    snprintf(fullpath, sizeof(fullpath), "%s%s", currentpath, filepath);
 
-void print_processed_files(void) {
-    fprintf(stderr, "[DEBUG] List of processed files:\n");
+    // extract the filename
+    char filename[FILE_SIZE];
+    extract_filename(fullpath, filename);
 
-    for (size_t i = 0; i < file_count; i++) {
-        fprintf(stderr, "\t%s\n", processed_files[i]);
-    } 
-}
+    fprintf(stderr, "[DEBUG] full path:%s - file name:%s\n", fullpath, filename);
 
-void print_included_files(void) {
-    fprintf(stderr, "List of included files:\n");
+    // check if it was process to not include duplicate files
+    if (is_processed(fullpath))
+        return EXIT_SUCCESS;
 
-    for (size_t i = 0; i < included_files_count; i++) {
-        fprintf(stderr, "\t%s\n", included_files[i]);
+    // output the content of the file
+    parse_file(fullpath);
+
+    // if it is a .h file search for a .c file to copy the implementation
+    size_t len = strlen(fullpath);
+    if (fullpath[len - 2] == '.' && fullpath[len - 1] == 'h') {
+        char newfile[FILE_SIZE];
+        char newpath[PATH_SIZE];
+
+        strcpy(newfile, filename);
+        newfile[strlen(newfile) - 1] = 'c';
+
+        if (SRC_DIR == CURRENT) {
+            strcpy(newpath, currentpath);
+        } else if (SRC_DIR == SRC) {
+            //update the basepath
+            extract_dirname(fullpath, newpath);
+            size_t newpath_len = strlen(newpath);
+            newpath[newpath_len - 7] = 's';
+            newpath[newpath_len - 6] = 'r';
+            newpath[newpath_len - 5] = 'c';
+            newpath[newpath_len - 4] = '/';
+            newpath[newpath_len - 3] = '\0';
+
+        }
+
+        process_file(newpath, newfile);
     }
+
+    return EXIT_SUCCESS;
 }
 
 int parse_file(const char *const fullpath) {
     FILE *file = fopen(fullpath, "r");
+
     if (file == NULL) {
-        fprintf(stderr, "Failed to open the file %s\n", fullpath);
+        fprintf(stderr, "[ERROR] Failed to open the file %s\n", fullpath);
         perror("error");
+
         return EXIT_FAILURE;
     }
+
+    // add the file to the list of processed files
+    processed_files[file_count] = (char *)malloc(strlen(fullpath) + 1);
+    strcpy(processed_files[file_count], fullpath);
+    file_count++;
+    print_processed_files();
 
     char filename[FILE_SIZE];
     extract_filename(fullpath, filename);
 
-    // add the file to the list of processed files
-    char *copy_file = (char *)malloc(sizeof(char) * FILE_SIZE);
-    strcpy(copy_file, filename);
-    processed_files[file_count++] = copy_file;
-    print_processed_files();
-
-    printf("\n/*\n");
+    printf("/*\n");
     printf(" * BEGIN %s\n", filename);
     printf(" */\n\n");
 
     // process the current file
     char buffer[1024];
     while (fgets(buffer, sizeof(buffer), file)) {
-        if ((strstr(buffer, "#ifndef") && strstr(buffer, "_H")) ||
-            (strstr(buffer, "#define") && strstr(buffer, "_H")) ||
-            strstr(buffer, "#endif"))
-                continue;
+        char header_filename[FILE_SIZE];
+        size_t len = strlen(filename);
 
-        char *include_pos = strstr(buffer, "#include");
+        strncpy(header_filename, filename, len);
+
+        for (size_t i = 0; i < len; i++)
+            header_filename[i] = toupper(header_filename[i]);
+
+        header_filename[len - 2] = '_';
+        header_filename[len - 1] = 'H';
+        header_filename[len] = '\0';
+
+        if (strstr(buffer, "#ifndef") && strstr(buffer, header_filename))
+            continue;
+        if (strstr(buffer, "#define") && strstr(buffer, header_filename))
+            continue;
+        if (strstr(buffer, "#endif"))
+            continue;
+
+        const char *include_pos = strstr(buffer, "#include");
 
         if (include_pos != NULL) {
             // extract system includes
@@ -172,6 +160,7 @@ int parse_file(const char *const fullpath) {
                 dirpath[dir_len + 1] = '\0';
                 *end = '\0';
                 process_file(dirpath, start) ;
+
                 continue;
             }
         }
@@ -186,66 +175,78 @@ int parse_file(const char *const fullpath) {
     return EXIT_SUCCESS;
 }
 
-int process_file(const char *const currentpath, const char *const filepath) {
-    fprintf(stderr, "[DEBUG] process_file(%s, %s)\n", currentpath, filepath);
+void extract_filename(const char *const path, char *const filename) {
+    char *last_slash = strrchr(path, '/');
 
-    // build the fullpath
-    char fullpath[PATH_SIZE];
-    snprintf(fullpath, sizeof(fullpath), "%s%s", currentpath, filepath);
+    if (last_slash == NULL) {
+        // slash not found, the full path is the filename
+        size_t path_len = strlen(path);
+        strncpy(filename, path, path_len);
+        filename[path_len] = '\0';
+    } else {
+        const char *start = last_slash + 1;
+        size_t file_len = strlen(start);
+        strncpy(filename, start, file_len);
+        filename[file_len] = '\0';
+    }
+}
 
-    // extract the filename
-    char filename[FILE_SIZE];
-    extract_filename(fullpath, filename);
+int extract_dirname(const char *const path, char *const dirname) {
+    if (path == NULL || dirname == NULL)
+        return EXIT_FAILURE;
 
-    fprintf(stderr, "[DEBUG] full path:%s - file name:%s\n", fullpath, filename);
+    const char *last_slash = strrchr(path, '/');
 
-    // check if it was process to not include duplicate files
-    if (is_processed(filename)) {
+    if (last_slash == NULL) {
+        strcpy(dirname, ".");
+
         return EXIT_SUCCESS;
     }
 
-    // output the content of the file
-    parse_file(fullpath);
+    size_t dir_len = last_slash - path;
 
-    // if it is a .h file search for a .c file to copy the implementation
-    size_t len = strlen(fullpath);
-    if (fullpath[len - 2] == '.' && fullpath[len - 1] == 'h') {
-        //update the basepath
-        char newpath[PATH_SIZE];
-        extract_dirname(fullpath, newpath);
-        size_t newpath_len = strlen(newpath);
-        newpath[newpath_len - 7] = 's';
-        newpath[newpath_len - 6] = 'r';
-        newpath[newpath_len - 5] = 'c';
-        newpath[newpath_len - 4] = '/';
-        newpath[newpath_len - 3] = '\0';
-
-        char newfile[FILE_SIZE];
-        strcpy(newfile, filename);
-        newfile[strlen(newfile) - 1] = 'c';
-
-        process_file(newpath, newfile);
+    if (dir_len == 0) {
+        strcpy(dirname, "/");
+    } else {
+        strncpy(dirname, path, dir_len);
+        dirname[dir_len] = '\0';
     }
+
     return EXIT_SUCCESS;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <file>\n", argv[0]);
-        return EXIT_FAILURE;
-    }
+bool is_processed(const char *const filename) {
+    for (size_t i = 0; i < file_count; i++)
+        if (strcmp(filename, processed_files[i]) == 0)
+            return true;
+    return false;
+}
 
-    process_file("", argv[1]);
+bool is_included(const char *const filename) {
+    for (size_t i = 0; i < included_files_count; i++)
+        if (strcmp(filename, included_files[i]) == 0)
+            return true;
+    return false;
+}
 
-    // clean memory
-    for (size_t i = 0; i < file_count; i++) {
-        free(processed_files[i]);
-    }
+void print_processed_files(void) {
+    fprintf(stderr, "[DEBUG] List of processed files:\n");
+
+    for (size_t i = 0; i < file_count; i++)
+        fprintf(stderr, "[DEBUG] { %s }\n", processed_files[i]);
+}
+
+void print_included_files(void) {
+    fprintf(stderr, "[DEBUG] List of included files:\n");
+
+    for (size_t i = 0; i < included_files_count; i++)
+        fprintf(stderr, "[DEBUG] { %s }\n", included_files[i]);
+}
+
+int bun_clear(void) {
+    for (size_t i = 0; i < file_count; i++)             free(processed_files[i]);
     file_count = 0;
-
-    for (size_t i = 0; i < included_files_count; i++) {
-        free(included_files[i]);
-    }
+    for (size_t i = 0; i < included_files_count; i++)   free(included_files[i]);
     included_files_count = 0;
 
     return EXIT_SUCCESS;

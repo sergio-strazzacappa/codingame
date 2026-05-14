@@ -33,7 +33,7 @@ typedef struct tree_s {
 
 typedef struct troll_s {
     int id;
-    int player;
+    int player; // 0 = my, 1 = opp
     int x;
     int y;
     int movement_speed;
@@ -54,6 +54,7 @@ extern size_t tree_count;
 extern tree_t trees[MAX_WIDTH * MAX_HEIGHT];
 extern size_t troll_count;
 extern troll_t trolls[MAX_WIDTH * MAX_HEIGHT];
+extern point_t my_shack;
 
 void update_inventory(bool _me);
 void update_trees(void);

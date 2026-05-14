@@ -17,6 +17,7 @@ size_t tree_count;
 tree_t trees[MAX_WIDTH * MAX_HEIGHT];
 size_t troll_count;
 troll_t trolls[MAX_WIDTH * MAX_HEIGHT];
+point_t my_shack;
 
 void update_inventory(bool _me) {
     inventory_t *inv = _me ? &me : &opp;
@@ -67,7 +68,7 @@ void print_inventories(void) {
 }
 
 void print_trees(void) {
-    fprintf(stderr, "[DEBUG] Trees:");
+    fprintf(stderr, "[DEBUG] Trees:\n");
 
     for (size_t i = 0; i < tree_count; i++) {
         fprintf(stderr, "[DEBUG] \t(%s, %d, %d, %d, %d, %d, %d)\n",
@@ -77,7 +78,7 @@ void print_trees(void) {
 }
 
 void print_trolls(void) {
-    fprintf(stderr, "[DEBUG] Trolls:");
+    fprintf(stderr, "[DEBUG] Trolls:\n");
 
     for (size_t i = 0; i < troll_count; i++) {
         fprintf(stderr,

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "map.h"
+#include "entities.h"
 
 size_t rows;
 size_t cols;
@@ -15,6 +16,11 @@ void map_init() {
 
         for (size_t x = 0; x < cols; x++) {
             grid[y][x] = line[x];
+
+            if (line[x] == '0') {
+                my_shack.x = x;
+                my_shack.y = y;
+            }
         }
     }
 }
@@ -25,14 +31,14 @@ void map_print() {
 
     // cols index
     for (size_t x = 0; x < cols; x++) {
-        fprintf(stderr, "%2zu", x);
-    } 
+        fprintf(stderr, "%3zu", x);
+    }
 
     // separator of index and data
     fprintf(stderr, "\n----");
 
     for (size_t x = 0; x < cols; x++) {
-        fprintf(stderr, "--");
+        fprintf(stderr, "---");
     }
 
     fprintf(stderr, "\n");
@@ -44,7 +50,7 @@ void map_print() {
 
         // data of each row
         for (size_t x = 0; x < cols; x++) {
-            fprintf(stderr, "%2c", grid[y][x]);
+            fprintf(stderr, "%3c", grid[y][x]);
         }
 
         fprintf(stderr, "\n");

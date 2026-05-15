@@ -24,7 +24,7 @@ void update_inventory(bool _me) {
 
     assert(inv != NULL);
 
-    scanf("%d%d%d%d%d%d", &inv->plum, &inv->lemons, &inv->apples, &inv->bananas,
+    scanf("%d%d%d%d%d%d", &inv->plums, &inv->lemons, &inv->apples, &inv->bananas,
         &inv->iron, &inv->wood);
 }
 
@@ -60,11 +60,11 @@ void update_trolls(void) {
 }
 
 void print_inventories(void) {
-    fprintf(stderr, "[DEBUG] My inventory {%d, %d, %d, %d, %d, %d}\n", me.plum,
+    fprintf(stderr, "[DEBUG] My inventory {%d, %d, %d, %d, %d, %d}\n", me.plums,
         me.lemons, me.apples, me.bananas, me.iron, me.wood);
 
     fprintf(stderr, "[DEBUG] Opp inventory {%d, %d, %d, %d, %d, %d}\n",
-        opp.plum, opp.lemons, opp.apples, opp.bananas, opp.iron, opp.wood);
+        opp.plums, opp.lemons, opp.apples, opp.bananas, opp.iron, opp.wood);
 }
 
 void print_trees(void) {

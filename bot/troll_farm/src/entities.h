@@ -13,7 +13,7 @@ typedef enum type_e {
 } type_t;
 
 typedef struct inventory_s {
-    int plum;
+    int plums;
     int lemons;
     int apples;
     int bananas;

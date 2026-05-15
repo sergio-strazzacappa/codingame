@@ -227,6 +227,12 @@
 
 - C
 
+## Multiplayer
+
+### Spring Challenge 2026 - Troll Farm
+
+- C
+
 ### Community
 
 #### Shadow Casting

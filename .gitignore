@@ -1,6 +1,7 @@
 .vscode/
 /bin
 /build
+/logs
 *.out
 main
 codingame.c

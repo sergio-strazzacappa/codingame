@@ -28,6 +28,7 @@ typedef struct tree_s {
     int health;
     int fruits;
     int cooldown;
+    bool claimed;
 } tree_t;
 
 typedef struct troll_s {

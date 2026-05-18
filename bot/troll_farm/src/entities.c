@@ -48,6 +48,8 @@ void update_trees(void) {
         if (strcmp(type, "APPLE") == 0)     trees[i].type = APPLE;
         if (strcmp(type, "BANANA") == 0)    trees[i].type = BANANA;
 
+        trees[i].claimed = false;
+
     }
 }
 
@@ -84,9 +86,9 @@ void print_trees(void) {
     fprintf(stderr, "[DEBUG] Trees:\n");
 
     for (size_t i = 0; i < tree_count; i++) {
-        fprintf(stderr, "[DEBUG] \t(%s, %d, %d, %d, %d, %d, %d)\n",
+        fprintf(stderr, "[DEBUG] \t(%s, %d, %d, %d, %d, %d, %d, %d)\n",
             TYPE_NAMES[trees[i].type], trees[i].p.x, trees[i].p.y, trees[i].size,
-            trees[i].health, trees[i].fruits, trees[i].cooldown);
+            trees[i].health, trees[i].fruits, trees[i].cooldown, trees[i].claimed);
     }
 }
 

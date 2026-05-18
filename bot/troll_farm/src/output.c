@@ -14,8 +14,8 @@ const char *ACTIONS[10] = {
     "MSG"
 };
 
-void action_move(const int id, const point_t p) {
-    printf("%s %d %d %d;", ACTIONS[0], id, p.x, p.y);
+void action_move(const int id, const point_t *p) {
+    printf("%s %d %d %d;", ACTIONS[0], id, p->x, p->y);
 }
 
 void action_harvest(const int id) {

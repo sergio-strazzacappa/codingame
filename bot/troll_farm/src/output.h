@@ -5,7 +5,7 @@
 
 extern const char *ACTONS[10];
 
-void action_move(const int id, const point_t p);
+void action_move(const int id, const point_t *p);
 void action_harvest(const int id);
 void action_plant(const int id, const char *type);
 void action_chop(const int id);

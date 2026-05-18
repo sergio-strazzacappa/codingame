@@ -8,6 +8,7 @@
 
 int main(void) {
     setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
     map_init();
 
     while (true) {
@@ -15,6 +16,12 @@ int main(void) {
         update_inventory(false);
         update_trees();
         update_trolls();
+
+        for (size_t i = 0; i < my_troll_count; i++) {
+            chopper(&my_trolls[i]);
+        }
+
+        train_troll();
 
         printf("\n");
     }

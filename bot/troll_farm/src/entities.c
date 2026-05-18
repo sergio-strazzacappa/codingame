@@ -1,8 +1,8 @@
 #include <stdbool.h>
-#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include "entities.h"
+#include "game.h"
 
 const char* TYPE_NAMES[] = {
     "PLUM",
@@ -13,18 +13,23 @@ const char* TYPE_NAMES[] = {
 
 inventory_t me;
 inventory_t opp;
+
 size_t tree_count;
 tree_t trees[MAX_WIDTH * MAX_HEIGHT];
-size_t troll_count;
-troll_t trolls[MAX_WIDTH * MAX_HEIGHT];
+
+size_t my_troll_count;
+troll_t my_trolls[MAX_TROLLS];
+
+size_t opp_troll_count;
+troll_t opp_trolls[MAX_TROLLS];
+
 point_t my_shack;
 
 void update_inventory(bool _me) {
     inventory_t *inv = _me ? &me : &opp;
 
-    assert(inv != NULL);
-
-    scanf("%d%d%d%d%d%d", &inv->plums, &inv->lemons, &inv->apples, &inv->bananas,
+    scanf("%d%d%d%d%d%d",
+        &inv->plums, &inv->lemons, &inv->apples, &inv->bananas,
         &inv->iron, &inv->wood);
 }
 
@@ -34,7 +39,7 @@ void update_trees(void) {
     for (size_t i = 0; i < tree_count; i++) {
         char type[16];
 
-        scanf("%15s%d%d%d%d%d%d", type, &trees[i].x, &trees[i].y,
+        scanf("%15s%d%d%d%d%d%d", type, &trees[i].p.x, &trees[i].p.y,
             &trees[i].size, &trees[i].health, &trees[i].fruits,
             &trees[i].cooldown);
 
@@ -43,19 +48,29 @@ void update_trees(void) {
         if (strcmp(type, "APPLE") == 0)     trees[i].type = APPLE;
         if (strcmp(type, "BANANA") == 0)    trees[i].type = BANANA;
 
+        trees[i].claimed = false;
+
     }
 }
 
 void update_trolls(void) {
-    scanf("%zu", &troll_count);
+    size_t total_trolls;
+    scanf("%zu", &total_trolls);
 
-    for (size_t i = 0; i < troll_count; i++) {
-        scanf("%d%d%d%d%d%d%d%d%d%d%d%d%d%d",
-            &trolls[i].id, &trolls[i].player, &trolls[i].x, &trolls[i].y,
-            &trolls[i].movement_speed, &trolls[i].carry_capacity,
-            &trolls[i].harvest_power, &trolls[i].chop_power, &trolls[i].carry_plum,
-            &trolls[i].carry_lemon, &trolls[i].carry_apple,
-            &trolls[i].carry_banana, &trolls[i].carry_iron, &trolls[i].carry_wood);
+    my_troll_count = 0;
+    opp_troll_count = 0;
+
+    for (size_t i = 0; i < total_trolls; i++) {
+        troll_t t;
+        scanf("%d%d%d%d%d%d%d%d%d%d%d%d%d%d", &t.id, &t.player, &t.p.x, &t.p.y,
+            &t.movement_speed, &t.carry_capacity, &t.harvest_power,
+            &t.chop_power, &t.carry_plum, &t.carry_lemon, &t.carry_apple,
+            &t.carry_banana, &t.carry_iron, &t.carry_wood);
+
+        if (t.player == 0)
+            my_trolls[my_troll_count++] = t;
+        else
+            opp_trolls[opp_troll_count++] = t;
     }
 }
 
@@ -71,22 +86,32 @@ void print_trees(void) {
     fprintf(stderr, "[DEBUG] Trees:\n");
 
     for (size_t i = 0; i < tree_count; i++) {
-        fprintf(stderr, "[DEBUG] \t(%s, %d, %d, %d, %d, %d, %d)\n",
-            TYPE_NAMES[trees[i].type], trees[i].x, trees[i].y, trees[i].size,
-            trees[i].health, trees[i].fruits, trees[i].cooldown);
+        fprintf(stderr, "[DEBUG] \t(%s, %d, %d, %d, %d, %d, %d, %d)\n",
+            TYPE_NAMES[trees[i].type], trees[i].p.x, trees[i].p.y, trees[i].size,
+            trees[i].health, trees[i].fruits, trees[i].cooldown, trees[i].claimed);
     }
 }
 
 void print_trolls(void) {
-    fprintf(stderr, "[DEBUG] Trolls:\n");
+    fprintf(stderr, "[DEBUG] My trolls:\n");
 
-    for (size_t i = 0; i < troll_count; i++) {
+    for (size_t i = 0; i < my_troll_count; i++) {
+        troll_t t = my_trolls[i];
         fprintf(stderr,
             "[DEBUG] \t(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)\n",
-            trolls[i].id, trolls[i].player, trolls[i].x, trolls[i].y,
-            trolls[i].movement_speed, trolls[i].carry_capacity,
-            trolls[i].harvest_power, trolls[i].chop_power, trolls[i].carry_plum,
-            trolls[i].carry_lemon, trolls[i].carry_apple,
-            trolls[i].carry_banana, trolls[i].carry_iron, trolls[i].carry_wood);
+            t.id, t.player, t.p.x, t.p.y, t.movement_speed, t.carry_capacity,
+            t.harvest_power, t.chop_power, t.carry_plum, t.carry_lemon,
+            t.carry_apple, t.carry_banana, t.carry_iron, t.carry_wood);
+    }
+
+    fprintf(stderr, "[DEBUG] Opponent trolls:\n");
+
+    for (size_t i = 0; i < opp_troll_count; i++) {
+        troll_t t = opp_trolls[i];
+        fprintf(stderr,
+            "[DEBUG] \t(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)\n",
+            t.id, t.player, t.p.x, t.p.y, t.movement_speed, t.carry_capacity,
+            t.harvest_power, t.chop_power, t.carry_plum, t.carry_lemon,
+            t.carry_apple, t.carry_banana, t.carry_iron, t.carry_wood);
     }
 }

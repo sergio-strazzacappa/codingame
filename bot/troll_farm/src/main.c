@@ -6,28 +6,24 @@
 #include "entities.h"
 #include "strategy.h"
 
-int turn = 0;
-
 int main(void) {
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
     map_init();
-   //map_print();
 
-    status_t status[32] = {TO_TREE};
     while (true) {
-        turn++;
         update_inventory(true);
         update_inventory(false);
         update_trees();
         update_trolls();
 
-        wood1(status);
-        train_troll(turn);
+        for (size_t i = 0; i < my_troll_count; i++) {
+            chopper(&my_trolls[i]);
+        }
+
+        train_troll();
 
         printf("\n");
-
-        //print_inventories();
-        //print_trees();
-        //print_trolls();
     }
 
     return EXIT_SUCCESS;

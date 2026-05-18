@@ -2,6 +2,7 @@
 /bin
 /build
 /logs
+/bot/arena
 *.out
 main
 codingame.c

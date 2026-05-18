@@ -12,6 +12,5 @@ bool enough_plums(void);
 bool enough_lemons(void);
 bool enough_apples(void);
 void train_troll(const int turn);
-void wood1(status_t status[]);
 
 #endif /* STRATRGY_H*/

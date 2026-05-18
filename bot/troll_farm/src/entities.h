@@ -23,8 +23,7 @@ typedef struct inventory_s {
 
 typedef struct tree_s {
     type_t type;
-    int x;
-    int y;
+    point_t p;
     int size;
     int health;
     int fruits;
@@ -34,8 +33,7 @@ typedef struct tree_s {
 typedef struct troll_s {
     int id;
     int player; // 0 = my, 1 = opp
-    int x;
-    int y;
+    point_t p;
     int movement_speed;
     int carry_capacity;
     int harvest_power;
@@ -50,15 +48,22 @@ typedef struct troll_s {
 
 extern inventory_t me;
 extern inventory_t opp;
+
 extern size_t tree_count;
 extern tree_t trees[MAX_WIDTH * MAX_HEIGHT];
-extern size_t troll_count;
-extern troll_t trolls[MAX_WIDTH * MAX_HEIGHT];
+
+extern size_t my_troll_count;
+extern troll_t my_trolls[MAX_TROLLS];
+
+extern size_t opp_troll_count;
+extern troll_t opp_trolls[MAX_TROLLS];
+
 extern point_t my_shack;
 
 void update_inventory(bool _me);
 void update_trees(void);
 void update_trolls(void);
+
 void print_inventories(void);
 void print_trees(void);
 void print_trolls(void);

@@ -1,9 +1,9 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
 
-#include "game.h"
+#include "map.h"
 
-extern const char *ACTONS[10];
+extern const char *ACTIONS[10];
 
 void action_move(const int id, const point_t *p);
 void action_harvest(const int id);

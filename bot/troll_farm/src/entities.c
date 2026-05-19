@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "map.h"
 #include "entities.h"
 #include "game.h"
 

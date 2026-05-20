@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "strategy.h"
 #include "entities.h"
 #include "output.h"
@@ -10,7 +11,7 @@
 /*
  *
  */
-size_t pathfinding(const point_t *start, const point_t *end, point_t *next) {
+int pathfinding(const point_t *start, const point_t *end, point_t *next) {
     // start and end are the same cell
     if (point_equal(start, end)) {
         *next = *end;
@@ -23,12 +24,8 @@ size_t pathfinding(const point_t *start, const point_t *end, point_t *next) {
     size_t head = 0;
     size_t tail = 0;
 
-    // queue the first element
-    queue[tail++] = (node_t){
-        .current = *start,
-        .parent_idx = -1,
-        .dist = 0};
-    
+    // queue the starting point
+    queue[tail++] = (node_t){*start, -1, 0};
     visited[start->y][start->x] = true;
 
     int target_idx = -1;
@@ -45,34 +42,41 @@ size_t pathfinding(const point_t *start, const point_t *end, point_t *next) {
         for (size_t i = 0; i < 4; i++) {
             point_t p = {n.current.x + DIRS[i][0], n.current.y + DIRS[i][1]};
 
-            if (p.x < 0)            continue;
-            if (p.x >= (int)cols)   continue;
-            if (p.y < 0)            continue;
-            if (p.y >= (int)rows)   continue;
-            if (!walkable(&p))      continue;
-            if (visited[p.y][p.x])  continue;
+            if (p.x < 0)
+                continue;
+            if (p.x >= (int)cols)
+                continue;
+            if (p.y < 0)
+                continue;
+            if (p.y >= (int)rows)
+                continue;
+            if (!walkable(&p))
+                continue;
+            if (visited[p.y][p.x])
+                continue;
 
+            assert(tail < rows * cols);
+
+            // add the nodes to the frontier
             visited[p.y][p.x] = true;
-            queue[tail++] = (node_t){
-                .current = p,
-                .parent_idx = current_idx,
-                .dist = n.dist + 1
-            };
+            queue[tail++] = (node_t){p, current_idx, n.distance + 1};
         }
     }
 
     if (target_idx != -1) {
         int curr = target_idx;
 
-        while (queue[curr].parent_idx > 0)
+        while (queue[curr].parent_idx != 0) {
             curr = queue[curr].parent_idx;
+        }
 
         *next = queue[curr].current;
 
-        return queue[target_idx].dist;;
+        return queue[target_idx].distance;
     }
 
-    return 0;
+    // unreachable
+    return -1;
 }
 
 // return true if point p is a tree and fruits > 0
@@ -97,7 +101,18 @@ bool is_troll_full(const troll_t *t) {
 }
 
 void chopper(const troll_t *t) {
-    point_t next;
+    for (size_t i = 0; i < tree_count; i++) {
+        fprintf(stderr, "(%d, %d) -> %d\n", trees[i].p.x, trees[i].p.y, trees[i].claimed);
+    }
+    point_t *next = (point_t*) malloc(sizeof(point_t));
+
+    for (size_t i = 0; i < tree_count; i++) {
+        if (point_equal(&t->p, &trees[i].p)) {
+            trees[i].claimed = true;
+            action_chop(t->id);
+            return;
+        }
+    }
 
     if (!is_troll_full(t)) {
         size_t closest = INT_MAX;
@@ -108,12 +123,12 @@ void chopper(const troll_t *t) {
             if (trees[i].claimed)
                 continue;
 
-            size_t d = pathfinding(&(t->p), &(trees[i].p), &next);
+            int d = pathfinding(&(t->p), &(trees[i].p), next);
 
             if (d < closest) {
                 closest = d;
                 target = i;
-                next_move = next;
+                next_move = *next;
             }
         }
 
@@ -124,20 +139,21 @@ void chopper(const troll_t *t) {
         }
 
         trees[target].claimed = true;
+        fprintf(stderr, "Move %d -> (%d, %d)\n", t->id, trees[target].p.x, trees[target].p.y);
         action_move(t->id, &next_move);
         return;
     }
 
-    size_t d = pathfinding(&(t->p), &my_shack, &next);
 
-    fprintf(stderr, "Return (%d, %d) -> (%d, %d) = (%d, %d)\n", t->p.x, t->p.y, my_shack.x, my_shack.y, next.x, next.y);
+    int d = pathfinding(&(t->p), &my_shack, next);
+    fprintf(stderr, "Return %d\n", d);
 
     if (d == 1) {
         action_drop(t->id);
         return;
     }
 
-    action_move(t->id, &next);
+    action_move(t->id, next);
 }
 
 void train_troll(void) {

@@ -21,6 +21,7 @@ extern task_t tasks[MAX_TASKS];
 extern size_t task_count;
 
 int cmp(const void *a, const void *b);
+point_t *get_troll_pos(const int id);
 void compute_tasks(void);
 int pathfinding(const point_t *start, const point_t *end, point_t *next);
 bool is_tree(const point_t *p);

@@ -11,9 +11,10 @@
 task_t tasks[MAX_TASKS];
 size_t task_count;
 
+// compare the cost of two task and order them in increase order
 int cmp(const void *a, const void *b) {
-    task_t *t1 = (task_t *)a;
-    task_t *t2 = (task_t *)b;
+    const task_t *t1 = (task_t *)a;
+    const task_t *t2 = (task_t *)b;
 
     if (t1->cost < t2->cost)
         return -1;
@@ -21,6 +22,17 @@ int cmp(const void *a, const void *b) {
         return 1;
     else
         return 0;
+}
+
+// return the position in the map of the troll with the given id, NULL if not
+// found
+point_t *get_troll_pos(const int id) {
+    for (size_t i = 0; i < my_troll_count; i++) {
+        if (my_trolls[i].id == id)
+            return &my_trolls[i].p;
+    }
+
+    return NULL;
 }
 
 void compute_tasks(void) {
@@ -62,14 +74,18 @@ void compute_tasks(void) {
             }
         }
 
-        // TODO: Check why pathfinding next value is the same as the target
         if (t_free) {
             troll_assigned[tasks_tracked] = t.troll_id;
             task_assigned[tasks_tracked] = t.pos;
             tasks_tracked++;
+            const point_t *start = get_troll_pos(t.troll_id);
             point_t *next = (point_t *) malloc(sizeof(point_t));
-            pathfinding(&t.pos, &t.pos, next);
-            fprintf(stderr, "(%d, %d) - (%d, %d)\n", t.pos.x, t.pos.y, next->x, next->y);
+
+            assert (start != NULL);
+
+            pathfinding(start, &t.pos, next);
+            fprintf(stderr, "(%d, %d) - (%d, %d) - (%d, %d)\n",
+                start->x, start->y, next->x, next->y, t.pos.x, t.pos.y);
             action_move(t.troll_id, next);
         }
     }

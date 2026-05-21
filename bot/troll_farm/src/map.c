@@ -1,12 +1,21 @@
 #include <stdio.h>
+#include <stdbool.h>
+#include "game.h"
 #include "map.h"
 #include "entities.h"
+
+const int DIRS[4][2] = {
+    { +0, -1 },
+    { +1, +0 },
+    { +0, +1 },
+    { -1, +0 }
+};
 
 size_t rows;
 size_t cols;
 char grid[MAX_HEIGHT][MAX_WIDTH];
 
-void map_init() {
+void map_init(void) {
     scanf("%zu%zu", &cols, &rows);
     fgetc(stdin);
 
@@ -25,7 +34,7 @@ void map_init() {
     }
 }
 
-void map_print() {
+void map_print(void) {
     // spaces for the rows-index
     fprintf(stderr, "   ");
 
@@ -55,4 +64,14 @@ void map_print() {
 
         fprintf(stderr, "\n");
     }
+}
+
+bool walkable(const point_t *p) {
+    // TODO: check collisions of my own trolls, predict the movements
+    // TODO: assume my shack is walkable so my trolls can return
+    return (grid[p->y][p->x] == '.' || grid[p->y][p->x] == '0'); 
+}
+
+bool point_equal(const point_t *p, const point_t *q) {
+    return (p->x == q->x && p->y == q->y);
 }

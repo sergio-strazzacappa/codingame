@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
-#include "game.h"
 #include "map.h"
 #include "entities.h"
 #include "strategy.h"

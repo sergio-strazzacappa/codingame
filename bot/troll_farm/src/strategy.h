@@ -1,10 +1,17 @@
 #ifndef STRATEGY_H
 #define STRATEGY_H
 
-#include "game.h"
+#include <stddef.h>
+#include "map.h"
 #include "entities.h"
 
-size_t distance(const point_t *p, const point_t *q);
+typedef struct node_s {
+    point_t current;
+    int parent_idx;
+    size_t distance;
+} node_t;
+
+int pathfinding(const point_t *start, const point_t *end, point_t *next);
 bool is_tree(const point_t *p);
 bool is_troll_full(const troll_t *t);
 void chopper(const troll_t *t);

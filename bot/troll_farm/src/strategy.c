@@ -8,13 +8,81 @@
 #include "output.h"
 #include "map.h"
 
+task_t tasks[MAX_TASKS];
+size_t task_count;
+
+int cmp(const void *a, const void *b) {
+    task_t *t1 = (task_t *)a;
+    task_t *t2 = (task_t *)b;
+
+    if (t1->cost < t2->cost)
+        return -1;
+    else if (t1->cost > t2->cost)
+        return 1;
+    else
+        return 0;
+}
+
+void compute_tasks(void) {
+    task_count = 0;
+
+    for (size_t i = 0; i < my_troll_count; i++) {
+        troll_t troll = my_trolls[i];
+
+        // add more tasks
+        for (size_t j = 0; j < tree_count; j++) {
+            point_t target = trees[j].p;
+            int dist = pathfinding(&troll.p, &target, NULL);
+
+            tasks[task_count++] = (task_t){troll.id, target, dist};
+        }
+    }
+
+    // sort the tasks by cost
+    qsort(tasks, task_count, sizeof(tasks[0]), cmp);
+
+    // assign tasks
+    int troll_assigned[MAX_TROLLS] = {0};
+    point_t task_assigned[MAX_TASKS] = {0};
+    size_t tasks_tracked = 0;
+
+    for (size_t i = 0; i < MAX_TASKS; i++) {
+        task_t t = tasks[i];
+        bool t_free = true;
+
+        for (size_t j = 0; j < tasks_tracked && t_free; j++) {
+            if (t.troll_id == troll_assigned[j]) {
+                t_free = false;
+                continue;
+            }
+
+            if (point_equal(&t.pos, &task_assigned[j])) {
+                t_free = false;
+                continue;
+            }
+        }
+
+        // TODO: Check why pathfinding next value is the same as the target
+        if (t_free) {
+            troll_assigned[tasks_tracked] = t.troll_id;
+            task_assigned[tasks_tracked] = t.pos;
+            tasks_tracked++;
+            point_t *next = (point_t *) malloc(sizeof(point_t));
+            pathfinding(&t.pos, &t.pos, next);
+            fprintf(stderr, "(%d, %d) - (%d, %d)\n", t.pos.x, t.pos.y, next->x, next->y);
+            action_move(t.troll_id, next);
+        }
+    }
+}
+
 /*
  *
  */
 int pathfinding(const point_t *start, const point_t *end, point_t *next) {
     // start and end are the same cell
     if (point_equal(start, end)) {
-        *next = *end;
+        if (next != NULL)
+            *next = *end;
         return 0;
     }
 
@@ -29,10 +97,10 @@ int pathfinding(const point_t *start, const point_t *end, point_t *next) {
     visited[start->y][start->x] = true;
 
     int target_idx = -1;
-    
+
     while (head < tail) {
         int current_idx = (int)head;
-        node_t n = queue[head++]; 
+        node_t n = queue[head++];
 
         if (point_equal(&(n.current), end)) {
             target_idx = current_idx;
@@ -66,11 +134,13 @@ int pathfinding(const point_t *start, const point_t *end, point_t *next) {
     if (target_idx != -1) {
         int curr = target_idx;
 
-        while (queue[curr].parent_idx != 0) {
-            curr = queue[curr].parent_idx;
-        }
+        if (next != NULL) {
+            while (queue[curr].parent_idx != 0) {
+                curr = queue[curr].parent_idx;
+            }
 
-        *next = queue[curr].current;
+            *next = queue[curr].current;
+        }
 
         return queue[target_idx].distance;
     }
@@ -144,7 +214,6 @@ void chopper(const troll_t *t) {
         return;
     }
 
-
     int d = pathfinding(&(t->p), &my_shack, next);
     fprintf(stderr, "Return %d\n", d);
 
@@ -166,7 +235,6 @@ void train_troll(void) {
      * chop_power 1 = my_troll_count + 1 iron
      */
 
-
     if ((size_t)me.plums < my_troll_count + 1)
         return;
 
@@ -180,4 +248,18 @@ void train_troll(void) {
         return;
 
     action_train(1, 1, 0, 1);
+}
+
+/*
+ ******************************************************************************
+ ******************************** DEBUG FUNCTIONS *****************************
+ ******************************************************************************
+ */
+
+void print_tasks(void) {
+    for (size_t i = 0; i < task_count; i++) {
+        task_t t = tasks[i];
+        fprintf(stderr, "[DEBUG] Task %zu: [%d, (%d, %d), %d]\n",
+            i + 1, t.troll_id, t.pos.x, t.pos.y, t.cost);
+    }
 }

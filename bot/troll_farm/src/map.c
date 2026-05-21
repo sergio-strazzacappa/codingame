@@ -69,7 +69,7 @@ void map_print(void) {
 bool walkable(const point_t *p) {
     // TODO: check collisions of my own trolls, predict the movements
     // TODO: assume my shack is walkable so my trolls can return
-    return (grid[p->y][p->x] == '.' || grid[p->y][p->x] == '0'); 
+    return (grid[p->y][p->x] == '.' || grid[p->y][p->x] == '0');
 }
 
 bool point_equal(const point_t *p, const point_t *q) {

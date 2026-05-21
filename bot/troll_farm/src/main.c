@@ -24,8 +24,11 @@ int main(void) {
         update_trees();
         update_trolls();
 
+        compute_tasks();
+        print_tasks();
+
         for (size_t i = 0; i < my_troll_count; i++) {
-            chopper(&my_trolls[i]);
+//            chopper(&my_trolls[i]);
         }
 
         train_troll();

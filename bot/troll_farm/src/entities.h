@@ -46,6 +46,7 @@ typedef struct troll_s {
     int carry_banana;
     int carry_iron;
     int carry_wood;
+    bool busy;
 } troll_t;
 
 extern inventory_t me;
@@ -62,10 +63,16 @@ extern troll_t opp_trolls[MAX_TROLLS];
 
 extern point_t my_shack;
 
-void update_inventory(bool _me);
+// UPDATES
+void update_inventory(const bool _me);
 void update_trees(void);
 void update_trolls(void);
 
+// UTILITIES
+bool is_troll_empty(const troll_t *t);
+bool is_shack_empty(void);
+
+// DEBUG
 void print_inventories(void);
 void print_trees(void);
 void print_trolls(void);

@@ -7,11 +7,17 @@
 #include "strategy.h"
 #include "output.h"
 
+size_t turn;
+
 int main(void) {
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
 
     map_init();
+    precompute_near_water();
+    precompute_distances_from_shack();
+
+    turn = 0;
 
     while (true) {
         clock_t start, end;
@@ -19,19 +25,22 @@ int main(void) {
         if (DEBUG)
             start = clock();
 
+        turn++;
+
         update_inventory(true);
         update_inventory(false);
         update_trees();
         update_trolls();
 
-        compute_tasks();
-        print_tasks();
+        // set the array of next positions to the current positions
+        for (size_t i = 0; i < my_troll_count; i++)
+            next_turn[i] = (point_t){my_trolls[i].p.x, my_trolls[i].p.y};
 
-        for (size_t i = 0; i < my_troll_count; i++) {
-//            chopper(&my_trolls[i]);
-        }
-
+        plant(turn);
+        send();
+        compute_tasks(turn);
         train_troll();
+        print_tasks();
 
         if (DEBUG) {
             end = clock();

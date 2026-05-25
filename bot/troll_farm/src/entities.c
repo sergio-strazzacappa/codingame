@@ -26,7 +26,9 @@ troll_t opp_trolls[MAX_TROLLS];
 
 point_t my_shack;
 
-void update_inventory(bool _me) {
+// UPDATES --------------------------------------------------------------------
+
+void update_inventory(const bool _me) {
     inventory_t *inv = _me ? &me : &opp;
 
     scanf("%d%d%d%d%d%d",
@@ -68,12 +70,35 @@ void update_trolls(void) {
             &t.chop_power, &t.carry_plum, &t.carry_lemon, &t.carry_apple,
             &t.carry_banana, &t.carry_iron, &t.carry_wood);
 
+        t.busy = false;
+
         if (t.player == 0)
             my_trolls[my_troll_count++] = t;
         else
             opp_trolls[opp_troll_count++] = t;
     }
 }
+
+// UTILITIES ------------------------------------------------------------------
+
+bool is_troll_empty(const troll_t *t) {
+    if (t == NULL)
+        return false;
+
+    return 
+        !t->carry_plum && 
+        !t->carry_lemon &&
+        !t->carry_apple &&
+        !t->carry_banana &&
+        !t-> carry_wood &&
+        !t-> carry_iron;
+}
+
+bool is_shack_empty(void) {
+    return !me.plums && !me.lemons && !me.apples && !me.bananas;
+}
+
+// DEBUG ----------------------------------------------------------------------
 
 void print_inventories(void) {
     fprintf(stderr, "[DEBUG] My inventory {%d, %d, %d, %d, %d, %d}\n", me.plums,

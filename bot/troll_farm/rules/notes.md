@@ -12,6 +12,29 @@
 
 # Bronze
 
+## Plant trees
+
+| ATTR                | PLUM | LEMMON | APPLE | BANANA |
+| ------------------- | ---- | ------ | ----- | ------ |
+| Cooldown            | 8    | 8      | 9     | 6      |
+| Cooldown near water | 3    | 3      | 2     | 4      |
+| Health (size 1)     | 6    | 6      | 11    | 3      | 
+| Health (size 2)     | 8    | 8      | 14    | 4      |
+| Health (size 3)     | 10   | 10     | 17    | 5      |
+| Health (size 4)     | 12   | 12     | 20    | 6      |
+
+- Plum, Lemmon or Apple are so much better near water
+
+1. Make a PLANT easy algorithm. Plant a tree in every cell at distance &leq; 3
+   from my shack. Priority 1 until turn 200
+2. Assignment priority for harvest and chop from turn 150
+3. TRAIN 3 TROLLS
+   - (2, 2, 1, 0)
+   - (2, 2, 1, 1)
+   - (2, 2, 1, 1)
+
+IRON needed = (1 + 1) + (2 + 1) = 5
+
 Hacer una implementación de un algoritmo genético (AG) para este juego de CodinGame (Spring Challenge 2026) **no es la mejor idea**, al menos no como el motor principal para controlar a los troles en tiempo real.
 
 Aunque los algoritmos genéticos son fascinantes, la estructura de este reto particular los hace muy difíciles de implementar con éxito debido a las restricciones de tiempo y la naturaleza de las acciones.

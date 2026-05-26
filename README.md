@@ -1,12 +1,14 @@
-# Codingame Puzzles
+# Codingame
 
-## Easy
+## Puzzles
 
-### 1x1x1 Rubik's Cube Movements
+### Easy
+
+#### 1x1x1 Rubik's Cube Movements
 
 - C
 
-### ASCII Art
+#### ASCII Art
 
 - Bash
 - C
@@ -15,24 +17,24 @@
 - Javascript
 - Python
 
-### Balanced Ternary Computer: Encode
+#### Balanced Ternary Computer: Encode
 
 - C
 
-### Bank Robbers
+#### Bank Robbers
 
 - C
 
-### Brackets, Extreme Edition
+#### Brackets, Extreme Edition
 
 - C
 - Python
 
-### Bulk Email Generator
+#### Bulk Email Generator
 
 - C
 
-### Defibrillators
+#### Defibrillators
 
 - Bash
 - C
@@ -41,28 +43,28 @@
 - Javascript
 - Python
 
-### Detective Pikaptcha EP1
+#### Detective Pikaptcha EP1
 
 - C
 
-### Detective Pikaptcha EP2
+#### Detective Pikaptcha EP2
 
 - C
 
-### Disordered First Contact
+#### Disordered First Contact
 
 - C
 
-### Egyptian Multiplication
+#### Egyptian Multiplication
 
 - C
 
-### Folding Paper
+#### Folding Paper
 
 - C
 - Python
 
-### Horse-racing Duals
+#### Horse-racing Duals
 
 - Bash
 - C
@@ -71,23 +73,23 @@
 - Javascript
 - Python
 
-### Horse-racing Hyperduals
+#### Horse-racing Hyperduals
 
 - C
 
-### How Time Flies
+#### How Time Flies
 
 - C
 
-### ISBN Check Digit
+#### ISBN Check Digit
 
 - C
 
-### Jack Silver: The Casino
+#### Jack Silver: The Casino
 
 - C
 
-### Mars Lander - Episode 1
+#### Mars Lander - Episode 1
 
 - Bash
 - C
@@ -96,12 +98,12 @@
 - Javascript
 - Python
 
-### May The Triforce Be With You!
+#### May The Triforce Be With You!
 
 - C
 - Python
 
-### MIME Type
+#### MIME Type
 
 - Bash
 - C
@@ -110,23 +112,23 @@
 - Javascript
 - Python
 
-### Monday Tuesday Happy Days
+#### Monday Tuesday Happy Days
 
 - C
 
-### Morellet's Random Lines
+#### Morellet's Random Lines
 
 - C
 
-### Nature Of Quadrilaterals
+#### Nature Of Quadrilaterals
 
 - C
 
-### Next Car License Plate?
+#### Next Car License Plate?
 
 - C
 
-### Onboarding
+#### Onboarding
 
 - Bash
 - C
@@ -135,15 +137,15 @@
 - Javascript
 - Python
 
-### Order Of Succession
+#### Order Of Succession
 
 - C
 
-### Organic Compounds
+#### Organic Compounds
 
 - C
 
-### Power Of Thor - Episode 1
+#### Power Of Thor - Episode 1
 
 - Bash
 - C
@@ -152,19 +154,19 @@
 - Javascript
 - Python
 
-### Rugby Score
+#### Rugby Score
 
 - C
 
-### Self-driving Car Testing
+#### Self-driving Car Testing
 
 - C
 
-### Simple Awalé
+#### Simple Awalé
 
 - C
 
-### Temperatures
+#### Temperatures
 
 - Bash
 - C
@@ -173,11 +175,11 @@
 - Javascript
 - Python
 
-### Text Formatting
+#### Text Formatting
 
 - C
 
-### The Descent
+#### The Descent
 
 - Bash
 - C
@@ -186,25 +188,25 @@
 - Javascript
 - Python
 
-### The River I
+#### The River I
 
 - C
 - Javascript
 
-### The River II
+#### The River II
 
 - C
 
-### The Travelling Salesman Problem
+#### The Travelling Salesman Problem
 
 - C
 - Javascript
 
-### Timer For Clash Of Code
+#### Timer For Clash Of Code
 
 - C
 
-### Unary
+#### Unary
 
 - Bash
 - C
@@ -213,17 +215,23 @@
 - Javascript
 - Python
 
-### What's So Complex About Mandelbrot?
+#### What's So Complex About Mandelbrot?
 
 - C
 
-### XML MDF-2016
+#### XML MDF-2016
 
 - C
 
-## Medium
+### Medium
 
-### Drug Interactions
+#### Drug Interactions
+
+- C
+
+## Optimization
+
+### Code VS Zombies
 
 - C
 

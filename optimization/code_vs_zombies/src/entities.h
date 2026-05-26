@@ -25,7 +25,7 @@ extern Point ash;
 extern size_t human_count;
 extern Human humans[MAX_HUMANS];
 
-extern size_t zommbie_count;
+extern size_t zombie_count;
 extern Zombie zombies[MAX_ZOMBIES];
 
 void read_input(void);

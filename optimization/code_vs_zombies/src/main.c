@@ -1,15 +1,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 #include "entities.h"
+#include "strategy.h"
+#include "game.h"
 
 int main(void) {
     while (true) {
+        time_t start, end;
+
+        start = clock();
+
         read_input();
 
         print_ash();
         print_humans();
         print_zombies();
+
+        if (ALG == GREEDY)
+            greedy();
+
+        end = clock();
+        double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
+
+        printf(" %.2fms\n", ms);
+
     }
 
     return EXIT_SUCCESS;

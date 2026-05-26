@@ -1,8 +1,12 @@
-#ifndef MCTS_H
-#define MCTS_H
+#ifndef STRATEGY_H
+#define STRATEGY_H
 
 #include <stddef.h>
 #include "entities.h"
+
+void greedy(void);
+
+double distance(const Point p, const Point q);
 
 typedef struct {
     Point ash;
@@ -24,4 +28,4 @@ extern Node root;
 
 void create_node(void);
 
-#endif /* MCTS_H */
+#endif /* STRATEGY_H */

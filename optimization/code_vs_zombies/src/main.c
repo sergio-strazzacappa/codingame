@@ -20,6 +20,8 @@ int main(void) {
 
         if (ALG == GREEDY)
             greedy();
+        if (ALG == BEAM_SEARCH)
+            beam_search();
 
         end = clock();
         double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;

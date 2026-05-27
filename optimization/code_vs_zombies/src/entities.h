@@ -2,6 +2,7 @@
 #define ENTITIES_H
 
 #include <stddef.h>
+#include <stdbool.h>
 #include "game.h"
 
 typedef struct {
@@ -12,12 +13,14 @@ typedef struct {
 typedef struct {
     int id;
     Point pos;
+    bool dead;
 } Human;
 
 typedef struct {
     int id;
     Point pos;
     Point next;
+    bool dead;
 } Zombie;
 
 extern Point ash;

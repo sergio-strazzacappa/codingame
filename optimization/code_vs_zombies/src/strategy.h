@@ -4,28 +4,45 @@
 #include <stddef.h>
 #include "entities.h"
 
-void greedy(void);
-
-double distance(const Point p, const Point q);
-
 typedef struct {
     Point ash;
 
-    size_t humans_count;
+    size_t human_count;
     Human humans[MAX_HUMANS];
 
-    size_t zombies_count;
+    size_t zombie_count;
     Zombie zombies[MAX_ZOMBIES];
+
+    double eval;
 } State;
 
 typedef struct {
     State s;
+
+    // indexes of the array
     int first_child;
     int sibling;
 } Node;
 
-extern Node root;
+extern size_t pool_count;
+extern Node pool[POOL_SIZE];
 
-void create_node(void);
+void greedy(void);
+void beam_search(void);
+
+
+void init_tree(State root);
+State create_state(const Point ash,
+    const size_t human_count, const Human humans[],
+    const size_t zombie_count, const Zombie zombies[],
+    const double parent_eval);
+State next_state(const State s, const Point target);
+Point move(const Point from, const Point to, const int limit);
+double evaluate(const State s, const double parent_eval);
+State clone_state(const State s);
+double distance(const Point p, const Point q);
+
+void print_tree(void);
+void print_node(Node n);
 
 #endif /* STRATEGY_H */

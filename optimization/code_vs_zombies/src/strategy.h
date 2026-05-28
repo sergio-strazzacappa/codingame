@@ -18,31 +18,31 @@ typedef struct {
 
 typedef struct {
     State s;
-
-    // indexes of the array
-    int first_child;
-    int sibling;
+    Point action;
+    int parent;
 } Node;
 
+extern const int FIB[];
 extern size_t pool_count;
 extern Node pool[POOL_SIZE];
 
 void greedy(void);
 void beam_search(void);
 
-
 void init_tree(State root);
 State create_state(const Point ash,
     const size_t human_count, const Human humans[],
     const size_t zombie_count, const Zombie zombies[],
     const double parent_eval);
-State next_state(const State s, const Point target);
+State next_state(const State *s, const Point target);
 Point move(const Point from, const Point to, const int limit);
-double evaluate(const State s, const double parent_eval);
-State clone_state(const State s);
+double evaluate(const State *s, const double parent_eval);
+State clone_state(const State *s);
 double distance(const Point p, const Point q);
+int cmp(const void *a, const void *b);
 
 void print_tree(void);
-void print_node(Node n);
+void print_node(const Node *n);
+void print_state(const State *s);
 
 #endif /* STRATEGY_H */

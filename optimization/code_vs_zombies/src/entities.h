@@ -34,7 +34,7 @@ extern Zombie zombies[MAX_ZOMBIES];
 void read_input(void);
 
 void print_ash(void);
-void print_humans(void);
-void print_zombies(void);
+void print_humans(const Human humans[]);
+void print_zombies(const Zombie zombies[]);
 
 #endif /* ENTITIES_H */

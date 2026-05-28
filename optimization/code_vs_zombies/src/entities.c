@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "entities.h"
 
-const char *DEAD[2] = {"TRUE, FALSE"};
+const char *DEAD[2] = {"FALSE", "TRUE"};
 
 Point ash;
 
@@ -34,7 +34,7 @@ void print_ash(void) {
     fprintf(stderr, "[DEBUG] Ash: (%d, %d)\n", ash.x, ash.y);
 }
 
-void print_humans(void) {
+void print_humans(const Human humans[]) {
     fprintf(stderr, "[DEBUG] Humans:\n");
 
     for (size_t i = 0; i < human_count; i++)
@@ -44,7 +44,7 @@ void print_humans(void) {
                 DEAD[humans[i].dead]);
 }
 
-void print_zombies(void) {
+void print_zombies(const Zombie zombies[]) {
     fprintf(stderr, "[DEBUG] Zombies:\n");
 
     for (size_t i = 0; i < zombie_count; i++)

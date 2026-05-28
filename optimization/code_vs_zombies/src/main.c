@@ -15,8 +15,8 @@ int main(void) {
         read_input();
 
         print_ash();
-        print_humans();
-        print_zombies();
+        print_humans(humans);
+        print_zombies(zombies);
 
         if (ALG == GREEDY)
             greedy();
@@ -27,7 +27,6 @@ int main(void) {
         double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
 
         printf(" %.2fms\n", ms);
-
     }
 
     return EXIT_SUCCESS;

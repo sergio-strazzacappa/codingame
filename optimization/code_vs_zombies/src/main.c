@@ -27,6 +27,8 @@ int main(void) {
         double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
 
         printf(" %.2fms\n", ms);
+
+        break; // run only one turn
     }
 
     return EXIT_SUCCESS;

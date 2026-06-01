@@ -23,6 +23,8 @@ typedef struct {
     bool dead;
 } Zombie;
 
+extern const char *DEAD[2];
+
 extern Point ash;
 
 extern size_t human_count;

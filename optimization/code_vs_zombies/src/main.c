@@ -28,7 +28,8 @@ int main(void) {
 
         printf(" %.2fms\n", ms);
 
-        break; // run only one turn
+        if (ONE_TURN)
+            break; // run only one turn
     }
 
     return EXIT_SUCCESS;

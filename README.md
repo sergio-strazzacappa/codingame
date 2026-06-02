@@ -103,6 +103,10 @@
 - C
 - Python
 
+#### Messed Up Mosaics
+
+- C
+
 #### MIME Type
 
 - Bash

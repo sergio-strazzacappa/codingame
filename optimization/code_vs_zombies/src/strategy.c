@@ -147,9 +147,11 @@ void beam_search(void) {
                 if (current.s.zombies[i].dead)
                     continue;
 
-                s = next_state(&current.s, current.s.zombies[i].pos);
+                Point zombie_next = move_zombie(current.s.zombies[i].pos, &current.s);
+
+                s = next_state(&current.s, zombie_next);
                 next_queue[next_tail++] =
-                    (Node){s, current.s.zombies[i].pos, current_pool_idx, true};
+                    (Node){s, zombie_next, current_pool_idx, true};
             }
 
             // move to every human
@@ -192,17 +194,19 @@ void beam_search(void) {
         }
 
         depth++;
-        end = clock();
 
+        if (DEBUG)
+            print_tree_structure();
+
+        end = clock();
         double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
 
-        if (DEBUG) {
-            print_tree_structure();
-            fprintf(stderr, "[DEBUG] Elapsed time %.2fms\n", ms);
-        }
+        fprintf(stderr, "[DEBUG] Elapsed time %.2fms\n", ms);
 
-        if (ms > 95)
+        if (ms > 95) {
+            fprintf(stderr, "[DEBUG] TIME OUT\n");
             break;
+        }
     }
 
     // get the index of max evaluation
@@ -276,12 +280,13 @@ State create_state(const Point ash,
     memcpy(s.humans, humans, sizeof(humans[0]) * human_count);
     s.zombie_count = zombie_count;
     memcpy(s.zombies, zombies, sizeof(zombies[0]) * zombie_count);
-    s.score = score(&s, parent_eval); 
+    s.score = score(&s, parent_eval, 0); 
     s.eval = h(&s);
 
     return s;
 }
 
+// simulate one turn
 State next_state(const State *s, const Point target) {
     assert(target.x >= 0);
     assert(target.x <= COLS);
@@ -303,37 +308,20 @@ State next_state(const State *s, const Point target) {
         if (s->zombies[i].dead)
             continue;
 
-        double dist = distance(s->zombies[i].pos, s->ash);
-        Point zombie_target = s->ash;
-        int min_distance = dist;
-
-        for (size_t j = 0; j < s->human_count; j++) {
-            if (s->humans[j].dead)
-                continue;
-
-            dist = distance(s->zombies[i].pos, s->humans[j].pos);
-
-            if (dist < min_distance) {
-                min_distance = dist;
-                zombie_target = s->humans[j].pos;
-            }
-        }
-
-        next.zombies[i].pos = move(s->zombies[i].pos, zombie_target, 400);
+        next.zombies[i].pos = move_zombie(s->zombies[i].pos, s);
     }
 
     // move ash
     next.ash = move(s->ash, target, 1000);
 
-    // evaluate the next state
-    next.score = score(&next, s->score);
-
     // kill zombies
+    size_t kills = 0;
     for (size_t i = 0; i < next.zombie_count; i++) {
         if (next.zombies[i].dead)
             continue;
 
         if (distance(next.ash, next.zombies[i].pos) <= 2000) {
+            kills++;
             next.zombies[i].dead = true;
         }
     }
@@ -353,25 +341,11 @@ State next_state(const State *s, const Point target) {
         }
     }
 
+    // evaluate the next state
+    next.score = score(&next, s->score, kills);
     next.eval = h(&next);
 
     return next;
-}
-
-Point move(const Point from, const Point to, const int limit) {
-    double dist = distance(from, to);
-
-    if (dist <= limit || dist == 0) {
-        return to;
-    } else {
-        int dx = to.x - from.x;
-        int dy = to.y - from.y;
-
-       return (Point){
-           (int)floor(from.x + dx * limit / dist),
-           (int)floor(from.y + dy * limit / dist),
-        };
-    }
 }
 
 State clone_state(const State *s) {
@@ -395,21 +369,14 @@ State clone_state(const State *s) {
 
 // calculate the score ash can get in the current state + the overall in the
 // previous turns
-int score(const State *s, const int parent_score) {
+int score(const State *s, const int parent_score, const size_t kills) {
     int live = n_live_humans(s);
     int points = parent_score;
     int zombie_score = live * live * 10;
-    size_t idx = 0;
 
-    for (size_t i = 0; i < s->zombie_count; i++) {
-        if (s->zombies[i].dead)
-            continue;
+    for (size_t i = 0; i < kills; i++)
+        points += zombie_score * FIB[i];
 
-        if (distance(s->ash, s->zombies[i].pos) <= 2000) {
-            points += zombie_score * FIB[idx];
-            idx++;
-        }
-    }
     return points;
 }
 
@@ -420,9 +387,9 @@ double h(const State *s) {
      */
 
     if (n_live_humans(s) == 0)
-        return -INF;
+        return -INF + s->score;
     if (n_live_zombies(s) == 0)
-        return INF;
+        return INF + s->score;
 
     // update the score -> previous score + current score
     double points = s->score; 
@@ -474,6 +441,46 @@ double h(const State *s) {
     }
 
     return points;
+}
+
+// MOVES
+
+Point move(const Point from, const Point to, const int limit) {
+    double dist = distance(from, to);
+
+    if (from.x == to.x && from.y == to.y)
+        return to;
+
+    if (dist <= limit) {
+        return to;
+    } else {
+        int dx = to.x - from.x;
+        int dy = to.y - from.y;
+
+       return (Point){
+           (int)floor(from.x + dx * limit / dist),
+           (int)floor(from.y + dy * limit / dist),
+        };
+    }
+}
+
+Point move_zombie(const Point from, const State *s) {
+    double dist = distance(from, s->ash);
+    Point zombie_target = s->ash;
+    int min_distance = dist;
+
+    for (size_t i = 0; i < s->human_count; i++) {
+        if (s->humans[i].dead)
+            continue;
+
+        dist = distance(from, s->humans[i].pos);
+
+        if (dist < min_distance) {
+            min_distance = dist;
+            zombie_target = s->humans[i].pos; 
+        }
+    }
+    return move(from, zombie_target, 400);
 }
 
 // UTILITIES -------------------------------------------------------------------
@@ -548,9 +555,9 @@ void print_state(const State *s) {
 
 void print_tree_structure(void) {
     for (size_t i = 0; i < pool_count; i++) {
-        fprintf(stderr, "[DEBUG] node at %3zu [MOVE to (%4d, %4d) target (%4d, %4d) - eval = %10.2f] - parent -> %3d - is_leaf %s\n",
+        fprintf(stderr, "[DEBUG] node at %3zu [MOVE to (%4d, %4d) target (%4d, %4d) - score = %4d - eval = %12.2f] - parent -> %3d - is_leaf %s\n",
             i, pool[i].s.ash.x, pool[i].s.ash.y,
-            pool[i].action.x, pool[i].action.y, pool[i].s.eval, pool[i].parent,
+            pool[i].action.x, pool[i].action.y, pool[i].s.score, pool[i].s.eval, pool[i].parent,
             DEAD[pool[i].is_leaf]);
         //print_node(&pool[i]);
     }

@@ -39,12 +39,15 @@ State create_state(const Point ash,
     const size_t zombie_count, const Zombie zombies[],
     const int parent_eval);
 State next_state(const State *s, const Point target);
-Point move(const Point from, const Point to, const int limit);
 State clone_state(const State *s);
 
 // score
-int score(const State *s, const int parent_score);
+int score(const State *s, const int parent_score, const size_t kills);
 double h(const State *s);
+
+// moves
+Point move(const Point from, const Point to, const int limit);
+Point move_zombie(const Point from, const State *s);
 
 // utilities
 int n_live_humans(const State *s);

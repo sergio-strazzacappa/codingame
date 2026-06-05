@@ -9,8 +9,8 @@ typedef enum {
     BEAM_SEARCH
 } Algorithm;
 
-#define MAX_HUMANS      99
-#define MAX_ZOMBIES     99
+#define MAX_HUMANS      100
+#define MAX_ZOMBIES     100
 #define ROWS            9000
 #define COLS            16000
 
@@ -21,9 +21,9 @@ typedef enum {
 #define BEAM_MAX_DEPTH  30
 
 // general params
-#define INF             99999999
-#define DEBUG           false
-#define ONE_TURN        false
+#define INF             9999999
+#define DEBUG           true
+#define ONE_TURN        true
 #define MIN(a, b)       ((a) < (b) ? (a) : (b))
 
 #endif /* GAME_H */

@@ -14,11 +14,12 @@ typedef struct {
     size_t zombie_count;
     Zombie zombies[MAX_ZOMBIES];
 
-    int score;
-    double eval;
+    int score; // score of the game from the root
+    double eval; // evaluation (h) of this state
 } State;
 
 typedef struct {
+    int id;
     State s;
     Point action; // MOVE to ... to reach this state
     int parent;
@@ -37,23 +38,25 @@ void init_tree(const State *root);
 State create_state(const Point ash,
     const size_t human_count, const Human humans[],
     const size_t zombie_count, const Zombie zombies[],
-    const int parent_eval);
-State next_state(const State *s, const Point target);
+    const int parent_score);
 State clone_state(const State *s);
-
-// score
-int score(const State *s, const int parent_score, const size_t kills);
-double h(const State *s);
+State next_state(const State *s, const Point target);
 
 // moves
 Point move(const Point from, const Point to, const int limit);
 Point move_zombie(const Point from, const State *s);
+
+// score
+int score(const State *s, const int parent_score, const size_t kills);
+double h(const State *s);
 
 // utilities
 int n_live_humans(const State *s);
 int n_live_zombies(const State *s);
 double distance(const Point p, const Point q);
 int cmp(const void *a, const void *b);
+bool node_equal(const Node n1, const Node n2);
+bool node_repeated(const Node n, const Node next_queue[], const size_t next_tail);
 
 // debug
 void print_tree(void);

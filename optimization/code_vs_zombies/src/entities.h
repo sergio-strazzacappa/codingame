@@ -35,6 +35,7 @@ extern Zombie zombies[MAX_ZOMBIES];
 
 void read_input(void);
 
+// debug
 void print_ash(void);
 void print_humans(const Human humans[]);
 void print_zombies(const Zombie zombies[]);

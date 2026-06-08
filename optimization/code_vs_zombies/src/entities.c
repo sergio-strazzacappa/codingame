@@ -30,6 +30,8 @@ void read_input(void) {
     }
 }
 
+// DEBUG -----------------------------------------------------------------------
+
 void print_ash(void) {
     fprintf(stderr, "[DEBUG] Ash: (%d, %d)\n", ash.x, ash.y);
 }

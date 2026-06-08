@@ -18,10 +18,16 @@ int main(void) {
         print_humans(humans);
         print_zombies(zombies);
 
-        if (ALG == GREEDY)
-            greedy();
-        if (ALG == BEAM_SEARCH)
-            beam_search();
+        switch (ALG) {
+            case GREEDY:
+                greedy();
+                break;
+            case BEAM_SEARCH:
+                beam_search();
+                break;
+            default:
+                fprintf(stderr, "[ERROR] Wrong algorithm\n");
+        }
 
         end = clock();
         double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;

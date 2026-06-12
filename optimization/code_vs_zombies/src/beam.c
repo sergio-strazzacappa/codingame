@@ -1,115 +1,26 @@
-#include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <time.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include "strategy.h"
-#include "entities.h"
+#include <string.h>
+#include <stddef.h>
+#include <sys/time.h>
+#include <math.h>
+#include <assert.h>
+#include "beam.h"
 
 const int FIB[] = {
     1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584,
-    4181, 6765
+    4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811,
+    514229, 832040, 1346269, 2178309, 3524578, 5702887
 };
 
 size_t pool_count;
 Node pool[POOL_SIZE];
 
-/*
- * greedy implementation
- */
+void run(void) {
+    pool_count = 0;
+    struct timeval start;
 
-void greedy(void) {
-    /*
-     * Check for every human the distance to the closest zombie. The greedy
-     * algorithm moves Ash towards the zombie that can kill a human sooner.
-     * But if the human can't be saved (ash is too far) that human is discarded
-     */
-    Point target = {-1, -1};
-    Point closest_human = {0, 0};
-    int closest_human_distance = INF;
-    int min_human = INF;
-
-    for (size_t i = 0; i < human_count; i++) {
-        int min_zombie = INF;
-        Point target_zombie = {0, 0};
-        bool found = true;
-
-        double d = distance(ash, humans[i].pos) - 2000; // distance - radius
-        int ash_turns = d <= 1000 ? 1 : d / 1000;
-
-        if (d < closest_human_distance) {
-            // save the closest human from Ash
-            closest_human_distance = d;
-            closest_human = humans[i].pos;
-        }
-
-        fprintf(stderr, "Ash reaches human (%d, %d) in %d turns\n",
-            humans[i].pos.x, humans[i].pos.y, ash_turns);
-
-        for (size_t j = 0; j < zombie_count; j++) {
-            d = distance(humans[i].pos, zombies[j].pos);
-            int turns_left = d <= 400 ? 1 : d / 400;
-
-            if (turns_left < ash_turns) {
-                // if the human can't be saved go to the next human, ignores
-                // the next zombies
-                fprintf(stderr, "Human at (%d, %d) is dead\n",
-                    humans[i].pos.x, humans[i].pos.y);
-
-                found = false;
-                break;
-            }
-
-            if (turns_left < min_zombie) {
-                // save the closest reachable zombie frim the current human
-                min_zombie = turns_left;
-                target_zombie = zombies[j].pos;
-            }
-        }
-
-        if (found && min_zombie < min_human) {
-            // the human can be saved
-            target = target_zombie;
-            min_human = min_zombie;
-        }
-
-        fprintf(stderr, "Human (%d, %d) dies in %d turns - found %d\n",
-            humans[i].pos.x, humans[i].pos.y, min_zombie, found);
-    }
-
-    State s = create_state(ash, human_count, humans, zombie_count, zombies, 0);
-    State n;
-
-    if (target.x != -1) {
-        // no human can be saved. Go to the closest human
-        fprintf(stderr, "[INFO] Go to the zombie\n");
-
-        n = next_state(&s, target);
-
-        printf("%d %d", target.x, target.y);
-    } else {
-        fprintf(stderr, "[INFO] Go to the human\n");
-        n = next_state(&s, closest_human);
-        printf("%d %d", closest_human.x, closest_human.y);
-    }
-
-    print_state(&n);
-}
-
-/*
- * beam search implementation
- * TODO: Duplicates nodes
- * TODO: first step is given as input
- * TODO: check example 2 with the same example starting from turn 1
- */
-
-void beam_search(void) {
-    time_t start, end;
-
-    start = clock();
+    gettimeofday(&start, NULL);
 
     // create the root of the tree
     State root =
@@ -117,30 +28,41 @@ void beam_search(void) {
     init_tree(&root);
 
     // queue of current nodes to expand
-    int queue[MAX_STATES];
+    int frontier[MAX_STATES];
     size_t head = 0;
     size_t tail = 0;
 
-    // append the root to the queue
-    queue[tail++] = 0;
+    // append the root to the frontier
+    frontier[tail++] = 0;
 
     size_t depth = 1;
     bool ended = false;
     while (depth <= BEAM_MAX_DEPTH && !ended) {
+        struct timeval end;
+        gettimeofday(&end, NULL);
+        double ms = (end.tv_sec - start.tv_sec) * 1000.0 +
+                    (end.tv_usec - start.tv_usec) / 1000.0;
+
+        fprintf(stderr, "[DEBUG] Elapsed time %.2fms\n", ms);
+
+        if (ms >= TIME_LIMIT) {
+            fprintf(stderr, "[DEBUG] TIME OUT\n");
+            break;
+        }
+
         if (DEBUG)
             fprintf(stderr, "[DEBUG] DEPTH %zu\n", depth);
 
         ended = true;
 
-        // queue for the candidates of the next depth
-        Node next_queue[MAX_STATES];
+        // frontier for the candidates of the next depth
+        Node next_frontier[MAX_STATES] = {};
         size_t next_tail = 0;
 
         while (head < tail) {
             int tmp_index = 0;
-            int current_pool_idx = queue[head];
+            int current_pool_idx = frontier[head++];
             Node current = pool[current_pool_idx];
-            head++;
 
             if (n_live_zombies(&current.s) == 0)
                 continue;
@@ -150,71 +72,65 @@ void beam_search(void) {
             ended = false;
 
             // stay
-            State s = next_state(&current.s, current.s.ash);
+            State s = next_state(&current.s, current.s.ash, depth);
             Node n = {tmp_index++, s, current.s.ash, current_pool_idx, true};
-
-            if (!node_repeated(n, next_queue, next_tail))
-                next_queue[next_tail++] = n;
+            next_frontier[next_tail++] = n;
 
             // move to every zombie
             for (size_t i = 0; i < current.s.zombie_count; i++) {
                 if (current.s.zombies[i].dead)
                     continue;
 
-                Point zombie_next = move_zombie(current.s.zombies[i].pos, &current.s);
+                Point zombie_next;
+                if (depth == 1)
+                    zombie_next = current.s.zombies[i].next;
+                else
+                    zombie_next = move_zombie(current.s.zombies[i].pos, &current.s);
 
-                s = next_state(&current.s, zombie_next);
-                Node n = {tmp_index++, s, zombie_next, current_pool_idx, true};
-
-                if (!node_repeated(n, next_queue, next_tail))
-                    next_queue[next_tail++] = n;
+                s = next_state(&current.s, zombie_next, depth);
+                n = (Node){tmp_index++, s, zombie_next, current_pool_idx, true};
+                next_frontier[next_tail++] = n;
             }
 
             // move to every human
-            /*for (size_t i = 0; i < current.s.human_count; i++) {
+            for (size_t i = 0; i < current.s.human_count; i++) {
                 if (current.s.humans[i].dead)
                     continue;
 
-                s = next_state(&current.s, current.s.humans[i].pos);
-                Node n = {tmp_index++, s, current.s.humans[i].pos, current_pool_idx, true};
-                
-                if (!node_repeated(n, next_queue, next_tail))
-                next_queue[next_tail++] = n;
-            }*/
+                s = next_state(&current.s, current.s.humans[i].pos, depth);
+                n = (Node){
+                    tmp_index++, s, current.s.humans[i].pos, current_pool_idx,
+                    true 
+                };
+                next_frontier[next_tail++] = n;
+            }
 
             // move to every cell in the middle between a human and a zombie
             for (size_t i = 0; i < current.s.zombie_count; i++) {
+                if (next_tail >= MAX_STATES)
+                    break;
                 if (current.s.zombies[i].dead)
                     continue;
                 for (size_t j = 0; j < current.s.human_count; j++) {
                     if (current.s.humans[j].dead)
                         continue;
 
-                    if (next_tail >= MAX_STATES)
-                        break;
+                    int x = (int)(current.s.zombies[i].pos.x +
+                            current.s.humans[j].pos.x) / 2;
+                    int y = (int)(current.s.zombies[i].pos.y +
+                            current.s.humans[j].pos.y) / 2;
 
-                    int x = (int)(current.s.zombies[i].pos.x + current.s.humans[j].pos.x) / 2;
-                    int y = (int)(current.s.zombies[i].pos.y + current.s.humans[j].pos.y) / 2;
                     Point p = {x, y};
-                    s = next_state(&current.s, p);
-
-                    Node n = {tmp_index++, s, p, current_pool_idx, true};
-
-                    if (!node_repeated(n, next_queue, next_tail))
-                        next_queue[next_tail++] = n;
+                    s = next_state(&current.s, p, depth);
+                    n = (Node){tmp_index++, s, p, current_pool_idx, true};
+                    next_frontier[next_tail++] = n;
                 }
-                if (next_tail >= MAX_STATES)
-                    break;
             }
-
             pool[current_pool_idx].is_leaf = false;
         }
 
-        // childs to keep
-        size_t k = MIN(next_tail, BEAM_K);
-
         // generate the queue for the next depth
-        qsort(next_queue, next_tail, sizeof(Node), cmp);
+        qsort(next_frontier, next_tail, sizeof(Node), cmp);
 
         head = 0;
         tail = 0;
@@ -223,7 +139,7 @@ void beam_search(void) {
             fprintf(stderr, "[DEBUG] next_queue:\n");
 
             for (size_t i = 0; i < next_tail; i++) {
-                Node nn = next_queue[i];
+                Node nn = next_frontier[i];
                 fprintf(stderr,
                     "[DEBUG] [ Ash=(%d, %d), action=(%d, %d), parent=%d, eval=%.2f]\n",
                     nn.s.ash.x, nn.s.ash.y,
@@ -233,11 +149,26 @@ void beam_search(void) {
         }
 
         // set the indexes of the next depth and add the nodes to the tree
-        for (size_t i = 0; i < k; i++) {
-            next_queue[i].id = pool_count;
-            pool[pool_count] = next_queue[i];
-            queue[tail++] = pool_count;
+        size_t k = MIN(next_tail, BEAM_K);
+
+        next_frontier[0].id = pool_count;
+        pool[pool_count] = next_frontier[0];
+        frontier[tail++] = pool_count;
+        pool_count++;
+        size_t saved_nodes = 1;
+
+        for (size_t i = 1; i < next_tail; i++) {
+            if (saved_nodes == k)
+                break;
+
+            if (node_equal(&next_frontier[i], &pool[pool_count - 1]))
+                continue;
+            
+            next_frontier[i].id = pool_count;
+            pool[pool_count] = next_frontier[i];
+            frontier[tail++] = pool_count;
             pool_count++;
+            saved_nodes++;
         }
 
         depth++;
@@ -245,15 +176,6 @@ void beam_search(void) {
         if (DEBUG)
             print_tree_structure();
 
-        end = clock();
-        double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
-
-        fprintf(stderr, "[DEBUG] Elapsed time %.2fms\n", ms);
-
-        if (ms >= TIME_LIMIT) {
-            fprintf(stderr, "[DEBUG] TIME OUT\n");
-            break;
-        }
     }
 
     // get the index of max evaluation
@@ -278,38 +200,22 @@ void beam_search(void) {
             index, pool[index].s.eval);
 
     // rebuld the path
-    int parent = pool[index].parent;
-    int best_move = -1;
+    int best_move = index;
 
-    while (pool[parent].parent != -1) {
-        best_move = parent;
-        parent = pool[parent].parent;
-    }
+    while (index != -1 && pool[index].parent != 0) 
+        index = pool[index].parent;
 
-    if (best_move == -1) {
+    if (index != -1)
         best_move = index;
-    }
 
-    fprintf(stderr, "[DEBUG] Best move %d\n", best_move);
+    fprintf(stderr, "[DEBUG] Best move %d at depth %zu\n", best_move, depth);
     fprintf(stderr, "[DEBUG] Final Eval %f\n", pool[best_move].s.eval);
     fprintf(stderr, "[DEBUG] Final Score %d\n", pool[best_move].s.score);
 
-    printf("%d %d", pool[best_move].action.x, pool[best_move].action.y);
+    printf("%d %d\n", pool[best_move].action.x, pool[best_move].action.y);
 }
 
 // TREE ------------------------------------------------------------------------
-
-void init_tree(const State *root) {
-    Node n;
-    n.id = 0;
-    n.s = *root;
-    n.action = (Point){-1, -1};
-    n.parent = -1;
-    n.is_leaf = true;
-
-    pool_count = 0;
-    pool[pool_count++] = n;
-}
 
 State create_state(const Point ash,
     const size_t human_count, const Human humans[],
@@ -329,6 +235,18 @@ State create_state(const Point ash,
     return s;
 }
 
+void init_tree(const State *root) {
+    Node n;
+    n.id = 0;
+    n.s = *root;
+    n.action = (Point){-1, -1};
+    n.parent = -1;
+    n.is_leaf = true;
+
+    pool_count = 0;
+    pool[pool_count++] = n;
+}
+
 State clone_state(const State *s) {
     State new;
 
@@ -346,8 +264,37 @@ State clone_state(const State *s) {
     return new;
 }
 
+bool node_equal(const Node *n1, const Node *n2) {
+    // check ash position
+    if (n1->s.ash.x != n2->s.ash.x)
+        return false;
+    if (n1->s.ash.y != n2->s.ash.y)
+        return false;
+
+    // check the number of humans alive
+    if (n_live_humans(&n1->s) != n_live_humans(&n2->s))
+        return false;
+
+    // check the zombies positions
+    for (size_t i = 0; i < n1->s.zombie_count; i++) {
+        Zombie z1 = n1->s.zombies[i];
+        Zombie z2 = n2->s.zombies[i];
+
+        if (z1.dead != z2.dead)
+            return false;
+        if (z1.pos.x != z2.pos.x)
+            return false;
+        if (z1.pos.y != z2.pos.y)
+            return false;
+    }
+
+    return true;
+}
+
+// GAME ------------------------------------------------------------------------
+
 // simulate one turn
-State next_state(const State *s, const Point target) {
+State next_state(const State *s, const Point target, const size_t depth) {
     assert(target.x >= 0 && target.x <= COLS);
     assert(target.y >= 0 && target.y <= ROWS);
 
@@ -366,7 +313,10 @@ State next_state(const State *s, const Point target) {
         if (s->zombies[i].dead)
             continue;
 
-        next.zombies[i].pos = move_zombie(s->zombies[i].pos, s);
+        if (depth == 1)
+            next.zombies[i].pos = s->zombies[i].next;
+        else
+            next.zombies[i].pos = move_zombie(s->zombies[i].pos, s);
     }
 
     // move ash
@@ -408,8 +358,6 @@ State next_state(const State *s, const Point target) {
     return next;
 }
 
-// MOVES -----------------------------------------------------------------------
-
 Point move(const Point from, const Point to, const int limit) {
     double dist = distance(from, to);
 
@@ -433,7 +381,6 @@ Point move(const Point from, const Point to, const int limit) {
 
 Point move_zombie(const Point from, const State *s) {
     // move to the closest target of ash and the humans
-
     double dist = distance(from, s->ash);
     Point zombie_target = s->ash;
     int min_distance = dist;
@@ -452,8 +399,6 @@ Point move_zombie(const Point from, const State *s) {
 
     return move(from, zombie_target, 400);
 }
-
-// SCORE -----------------------------------------------------------------------
 
 // calculate the score ash can get in the current state + the overall in the
 // previous turns
@@ -474,64 +419,83 @@ double h(const State *s) {
      * Decrease -> distance of ash from the dangerous zombie
      */
 
-    if (n_live_humans(s) == 0)
+    int live_humans = n_live_humans(s);
+    int live_zombies = n_live_zombies(s);
+
+    if (live_humans == 0)
         return -INF + s->score;
-    if (n_live_zombies(s) == 0)
+    if (live_zombies == 0)
         return INF + s->score;
 
     // update the score -> previous score + current score
     double points = s->score; 
 
     // decrease the score for dead humans
-    points -= (s->human_count - n_live_humans(s)) * 2000000.0;
+    points -= (s->human_count - live_humans) * 4000000.0;
+
+    // mark dead future dead humans
+    bool dead[MAX_HUMANS];
+
+    for (size_t i = 0; i < s->human_count; i++) {
+        dead[i] = false;
+
+        if (s->humans[i].dead) {
+            dead[i] = true;
+            continue;
+        }
+
+        double human_to_ash = distance(s->humans[i].pos, s->ash);
+
+        for (size_t j = 0; j < zombie_count; j++) {
+            if (s->zombies[j].dead)
+                continue;
+
+            double human_to_zombie = distance(s->humans[i].pos, s->zombies[j].pos);
+
+            if (human_to_ash > human_to_zombie) {
+                dead[i] = true;
+                points -= 4000000.0;
+                break;
+            }
+        }
+    }
 
     // decrease the score if ash is far from the dangerous zombie
-    double danger = INF;
-    int index = -1;
+    int min_distance_ash_zombie = INF;
     for (size_t i = 0; i < s->zombie_count; i++) {
         if (s->zombies[i].dead)
             continue;
 
+        double d = distance(s->ash, s->zombies[i].pos);
+
+        if (d < min_distance_ash_zombie)
+            min_distance_ash_zombie = d;
+
         // find the dangerous zombie
+        int min_distance_human_zombie = INF;
         for (size_t j = 0; j < s->human_count; j++) {
-            if (s->humans[j].dead)
+            if (s->humans[j].dead || dead[j])
                 continue;
 
-            double d = distance(s->humans[j].pos, s->zombies[i].pos);
+            d = distance(s->humans[j].pos, s->zombies[i].pos);
 
-            if (d < danger) {
-                danger = d;
-                index = i;
-            }
+            if (d < min_distance_human_zombie)
+                min_distance_human_zombie = d;
+        }
+
+        if (min_distance_human_zombie != INF) {
+            points -= min_distance_ash_zombie / 10.0;
+
+            if (min_distance_human_zombie < 800)
+                points -= (800 - min_distance_human_zombie) * 5;
         }
     }
 
-    if (index != -1) {
-        double d = distance(s->ash, s->zombies[index].pos);
-        points -= d / 10.0;
-    } else {
-        double min = INF;
-
-        for (size_t i = 0; i < s->zombie_count; i++) {
-            if (s->zombies[i].dead)
-                continue;
-            
-            double d = distance(s->ash, s->zombies[i].pos);
-
-            if (d < min) {
-                min = d;
-            }
-        }
-
-        if (min != INF) {
-            points -= (min / 20.0);
-        }
-    }
+    if (min_distance_ash_zombie != INF)
+        points -= (min_distance_ash_zombie / 2.0);
 
     return points;
 }
-
-// UTILITIES -------------------------------------------------------------------
 
 int n_live_humans(const State *s) {
     int n = 0;
@@ -572,39 +536,6 @@ int cmp(const void *a, const void *b) {
     else
         return -1;
 }
-
-bool node_equal(const Node n1, const Node n2) {
-    // check ash position
-    if (n1.s.ash.x != n2.s.ash.x)
-        return false;
-    if (n1.s.ash.y != n2.s.ash.y)
-        return false;
-
-    // check the zombies positions
-    for (size_t i = 0; i < n1.s.zombie_count; i++) {
-        Zombie z1 = n1.s.zombies[i];
-        Zombie z2 = n2.s.zombies[i];
-
-        if (z1.dead != z2.dead)
-            return false;
-        if (z1.pos.x != z2.pos.x)
-            return false;
-        if (z1.pos.y != z2.pos.y)
-            return false;
-    }
-
-    return true;
-}
-
-bool node_repeated(const Node n, const Node next_queue[], const size_t next_tail) {
-    for (size_t i = 0; i < next_tail; i++) {
-        if (node_equal(n, next_queue[i]))
-            return true;
-    }
-    return false;
-}
-
-// DEBUG -----------------------------------------------------------------------
 
 void print_tree(void) {
     for (size_t i = 0; i < pool_count; i++) {

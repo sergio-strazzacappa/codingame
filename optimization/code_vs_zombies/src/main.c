@@ -4,7 +4,7 @@
 #include <time.h>
 #include "entities.h"
 #include "game.h"
-#include "greedy.h" // change to the algorithm used
+#include "beam.h" // change to the algorithm used
 
 int main(void) {
     while (true) {

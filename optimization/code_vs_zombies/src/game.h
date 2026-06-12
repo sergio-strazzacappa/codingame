@@ -2,8 +2,8 @@
 #define GAME_H
 
 // game params
-#define MAX_HUMANS      100
-#define MAX_ZOMBIES     100
+#define MAX_HUMANS      15
+#define MAX_ZOMBIES     30
 #define ROWS            9000
 #define COLS            16000
 #define INF             9999999

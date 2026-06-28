@@ -1,12 +1,13 @@
-#include <stdio.h>
-#include <stddef.h>
+#include "greedy.h"
+#include "entities.h"
+#include "game.h"
+#include <assert.h>
 #include <math.h>
 #include <stdbool.h>
-#include "entities.h"
-#include "greedy.h"
+#include <stddef.h>
+#include <stdio.h>
 
-void run(void) {
-
+Point run(void) {
     /*
      * Check for every human the distance to the closest zombie. The greedy
      * algorithm moves Ash towards the zombie that can kill a human sooner.
@@ -21,10 +22,9 @@ void run(void) {
     for (size_t i = 0; i < human_count; i++) {
         int min_zombie = INF;
         Point target_zombie = {0, 0};
-        bool found = true;
+        bool is_safe = true;
 
-        double d = distance(ash, humans[i].pos) - 2000; // distance - radius
-        int ash_turns = d <= 1000 ? 1 : d / 1000;
+        double d = distance(ash, humans[i].pos);
 
         if (d < closest_human_distance) {
             // save the closest human from Ash
@@ -32,50 +32,50 @@ void run(void) {
             closest_human = humans[i].pos;
         }
 
-        fprintf(stderr, "Ash reaches human (%d, %d) in %d turns\n",
-            humans[i].pos.x, humans[i].pos.y, ash_turns);
-
         for (size_t j = 0; j < zombie_count; j++) {
-            d = distance(humans[i].pos, zombies[j].next);
-            int turns_left = d <= 400 ? 1 : d / 400;
+            double d_h_z = distance(humans[i].pos, zombies[j].pos);
+            int turns_zombie = ceil(d_h_z / ZOMBIE_SPEED);
 
-            if (turns_left < ash_turns) {
+            double d_a_z = distance(ash, zombies[j].pos) - ASH_RADIUS;
+            int turns_ash = ceil(d_a_z / ASH_SPEED);
+
+            if (turns_ash < 0)
+                turns_ash = 0;
+
+            if (turns_zombie < turns_ash) {
                 // if the human can't be saved go to the next human, ignores
                 // the next zombies
-                fprintf(stderr, "Human at (%d, %d) is dead\n",
-                    humans[i].pos.x, humans[i].pos.y);
-
-                found = false;
+                fprintf(stderr, "Human at (%d, %d) is dead in %d turns\n",
+                        humans[i].pos.x, humans[i].pos.y, turns_zombie);
+                is_safe = false;
                 break;
             }
 
-            if (turns_left < min_zombie) {
-                // save the closest reachable zombie frim the current human
-                min_zombie = turns_left;
-                target_zombie = zombies[j].pos;
+            if (turns_zombie < min_zombie) {
+                // save the closest reachable zombie from the current human
+                min_zombie = turns_zombie;
+                target_zombie = zombies[j].next_pos;
             }
         }
 
-        if (found && min_zombie < min_human) {
+        if (is_safe && min_zombie < min_human) {
             // the human can be saved
             target = target_zombie;
             min_human = min_zombie;
         }
 
-        fprintf(stderr, "Human (%d, %d) dies in %d turns - found %d\n",
-            humans[i].pos.x, humans[i].pos.y, min_zombie, found);
+        if (is_safe)
+            fprintf(stderr, "Human (%d, %d) dies in %d turns\n",
+                    humans[i].pos.x, humans[i].pos.y, min_zombie);
     }
 
     if (target.x != -1) {
-        // no human can be saved. Go to the closest human
-        fprintf(stderr, "[INFO] Go to the zombie\n");
-        printf("%d %d\n", target.x, target.y);
+        fprintf(stderr, "[INFO] Go to the zombie (%d, %d)\n", target.x,
+                target.y);
+        return target;
     } else {
+        // no human can be saved. Go to the closest human
         fprintf(stderr, "[INFO] Go to the human\n");
-        printf("%d %d\n", closest_human.x, closest_human.y);
+        return closest_human;
     }
-}
-
-double distance(const Point p, const Point q) {
-    return hypot(p.x - q.x, p.y - q.y);
 }

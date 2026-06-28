@@ -3,7 +3,6 @@
 
 #include "entities.h"
 
-void run(void);
-double distance(const Point p, const Point q);
+Point run(void);
 
 #endif /* GREEDY_H */

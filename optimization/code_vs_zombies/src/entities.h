@@ -1,9 +1,9 @@
 #ifndef ENTITIES_H
 #define ENTITIES_H
 
-#include <stddef.h>
-#include <stdbool.h>
 #include "game.h"
+#include <stdbool.h>
+#include <stddef.h>
 
 typedef struct {
     int x;
@@ -13,17 +13,15 @@ typedef struct {
 typedef struct {
     int id;
     Point pos;
-    bool dead;
 } Human;
 
 typedef struct {
     int id;
     Point pos;
-    Point next;
-    bool dead;
+    Point next_pos;
 } Zombie;
 
-extern const char *DEAD[2];
+extern const int FIB[];
 
 extern Point ash;
 
@@ -35,9 +33,16 @@ extern Zombie zombies[MAX_ZOMBIES];
 
 void read_input(void);
 
+Point move(const Point from, const Point to, const int limit);
+Point move_zombie(const Point zombie, const Point humans[], const size_t hc,
+                  const Point ash);
+size_t kill_zombies(const Point ash);
+size_t kill_humans(void);
+double distance(const Point p, const Point q);
+
 // debug
 void print_ash(void);
-void print_humans(const Human humans[]);
-void print_zombies(const Zombie zombies[]);
+void print_humans(const Human humans[], const size_t hc);
+void print_zombies(const Zombie zombies[], const size_t zc);
 
 #endif /* ENTITIES_H */

@@ -137,6 +137,7 @@
 - Bash
 - C
 - C++
+- Haskell
 - Java
 - Javascript
 - Python

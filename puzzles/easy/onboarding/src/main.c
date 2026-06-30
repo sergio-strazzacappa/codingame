@@ -1,8 +1,9 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-int main () {
-    while (1) {
+int main() {
+    while (true) {
         char enemy_1[257], enemy_2[257];
         int dist_1, dist_2;
 
